@@ -21,7 +21,7 @@ export default function PricingPage() {
             <Link href="/" className="text-sm text-[#5a7a8a] hover:text-[#1C4E64] font-medium transition-colors">
               Home
             </Link>
-            <Link href="/apply" className="text-sm text-[#5a7a8a] hover:text-[#1C4E64] font-medium transition-colors">
+            <Link href="/jobs" className="text-sm text-[#5a7a8a] hover:text-[#1C4E64] font-medium transition-colors">
               Careers
             </Link>
             <Link href="/funding" className="text-sm text-[#5a7a8a] hover:text-[#1C4E64] font-medium transition-colors">

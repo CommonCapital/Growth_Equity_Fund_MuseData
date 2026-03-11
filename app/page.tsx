@@ -4,10 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
-import Script from "next/script";
 
-/* ─── Reveal hook: IntersectionObserver ─── */
-function Reveal({
+/* ─── Fade/Reveal via IntersectionObserver ─── */
+function Fade({
   children,
   delay = 0,
   style,
@@ -25,11 +24,11 @@ function Reveal({
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.classList.add("on");
+          el.classList.add("in");
           io.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.08 }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -37,7 +36,7 @@ function Reveal({
   return (
     <div
       ref={ref}
-      className={`reveal ${className}`}
+      className={`fade ${className}`}
       style={{ transitionDelay: `${delay}s`, ...style }}
     >
       {children}
@@ -45,7 +44,7 @@ function Reveal({
   );
 }
 
-const MARQUEE_ITEMS = [
+const TICKER_ITEMS = [
   "Enterprise Software","Enterprise AI","Minority Equity","$5M–$25M Checks",
   "$3M–$25M ARR","New York","Los Angeles","London","Investing Globally","LP Co-Investment",
   "Proprietary Diligence","Sponsor Processes",
@@ -54,16 +53,26 @@ const MARQUEE_ITEMS = [
   "Proprietary Diligence","Sponsor Processes",
 ];
 
-const WHAT_TILES = [
-  { n:"01", title:"Companies",              href:"/companies",               body:"Our portfolio of enterprise software and AI companies — each selected through proprietary diligence, backed with $5–25M minority equity.", link:"View Portfolio" },
-  { n:"02", title:"Strategic Resource Group", href:"/strategic-resource-group", body:"Operational infrastructure for portfolio companies — governance, reporting cadence, and strategic advisory for founders scaling toward institutional capital.", link:"Learn More" },
-  { n:"03", title:"Founders",               href:"/founders",                body:"A curated network of founders, operators, and investors sharing intelligence, access, and conviction across the MUSEDATA ecosystem.", link:"Explore" },
-             
+const PILLARS = [
+  { n:"01", title:"Companies",               href:"/companies",                body:"Our portfolio of enterprise software and AI businesses, each selected through proprietary diligence and backed with $5–25M minority equity.",                                                                      link:"View Portfolio" },
+  { n:"02", title:"People",                  href:"/people",                   body:"The operators, investors, and advisors behind MUSEDATA: a team built for rigorous diligence, institutional relationships, and long-term value creation.",                                                          link:"Meet the Team" },
+  { n:"03", title:"Strategic Resource Group",href:"/strategic-resource-group", body:"Operational infrastructure embedded within every portfolio company: governance, reporting cadence, and strategic advisory for founders scaling toward institutional capital.",                                   link:"Learn More" },
+
 ];
+
+const PROCESS_STEPS = [
+  { n:"01", days:"Days 1–7",  title:"Initial Screen",  text:"Quantitative review of ARR, growth rate, retention, and unit economics against our investment criteria." },
+  { n:"02", days:"Days 7–21", title:"Deep Diligence",  text:"Customer interviews, competitive mapping, financial model stress-testing, and management assessment." },
+  { n:"03", days:"Days 21–35",title:"Evidence Pack",   text:"Proprietary research compiled into our institutional evidence pack, reviewed by the full investment committee." },
+  { n:"04", days:"Days 35–45",title:"Term Sheet",      text:"If the evidence supports conviction, we move to term sheet. No drawn-out processes. No wasted time." },
+];
+
+const LOGO_B64 = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABAAEADASIAAhEBAxEB/8QAGgABAQEBAQEBAAAAAAAAAAAACAcGCQUAAv/EAD4QAAAEBAIFBwoEBwAAAAAAAAECAwQABQYRBwgSITFW0hQXQWGRlLIWGCIyNTZVc3bRQlGV0wkjN3F0gZL/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQABf/EACQRAAICAgIBAwUAAAAAAAAAAAECAAMEERJBEwUhYRQxccHw/9oADAMBAAIRAxEAPwCx5pa7qeh5fIVaamBWZ3aqxVhMgmppAUCCHrgNto7IhHP/AIqbxJdwb8EVHPD7Jpb57nwpwXY6uLUjVAkTh5t1i3EKxERWDGL1f1HP5q1m85TcIt5K7dJFBoiSypCgJRuUoXt+WyI75y2Mm9CP6a2/bjTZc/eqe/Tj7wBB5gbK0DkajabXNYJJ7lg85bGTehH9NbftxYsZ8Xq/pyfyprKJym3RcSVo6VKLRE91TlETDcxRtf8ALZA9hDZjPeqRfTjHwDGrrQuBqa61xUSCep++f/FTeJLuDfgi75Wq7qeuJfPlalmBXh2iqJURKgmnogYDiPqAF9gbYG8KLI97Jqn57bwqQWVUi1EgRWFdY1wDMTNNmlQodeXyEK1fTpqmCq3JhlqZDiYbE0tLS/1a3XEI5BgP8drjuyH2io54fZNLfPc+FOC7GxU3UDszZtnG4jiDEXgqywmLUM0CnZtVKzk0mdFWB2ikUoIiUNMQ0Q9YA2dES/ySy/bx173dvwx62Wv3ynP0898IRLoPwhnOyeoH1BWtdAd/qbvySy/bx173dvwxRMdlcHW1TytGp5tViLsslaAiDJukYgoaI6AiJvxCF79EQCNZm4/qHJvpth4TQuyvgw0TG02+VWDAdT0+WZevjted0Q+0IDKYtQKsuqAaEfTx0kCyHKhmaRCCUbH0dHR2htvfqgEQwP4evsWsP8lr4VITcW4HZlOOqCwaUTb5tKRqSrJdT6dOyleYnbLLmWBIQ9ADAS17iG2wwfeZzE3c9/2k4ot+dKYP5fK6ZFg+ctBOu4A4oqmJpWKna9h1wZ/KOofj0072p94fi8/ENakmaa/MeQO/74lqwIw2rmRVRNHU3px20RVkrtumc4lsZQxQ0S6h2jE+5nMTdz3/AGk4o0eXSdTh1V03I6mz9chZA8OUqjg5gAwFCwhcdvXEz8o6h+PTTvan3hiizmfcdRLGrxr7Hvv8fE1PM5ibue/7ScUaPMnhViFUlbSt7I6Wevm6UiZt1FExJYqhCjpF1jtC8TPyjqH49NO9qfeGdiTiZL8LcFGVWzNE71YWrdBo2A+iZy4OncCiYb2CwGMI69RR2jqhGUzpomVYKVvyA31BbzE4ubjTL/pPihNZKqIqui5VUyVUyRxKzul25kAWEvpgUqlxCwjsuHbEPkedOv0qhI4nMgkLqUmU/mNWyaiSpSX/AAKCc3pf3AQHqhx0pPJdU1NS2oZSqKrCYtiOW5hCw6BygIAIdAhewh0DeI3uLDRnRShUOxIJnh9k0t89z4U4LsdFKtpGm6sTbp1FKUJiRsJjIgqI+gJrXtYQ22CM9zOYZbnsO0/FFNGUtaBSJFk4L22FwRC7lr98pz9PPfCES6Ogkhw2oaROlXUopxo0WVQOgocgmuZM2oxdY7BjzuZzDLc9h2n4oMZiBidQG9OsKBdj23AZC2zJYazbEzLxKJfICgrNpaRs/bNxMBeUaKIkMmAjqARKcRC/SUA1Xje8zmGW57DtPxRuWyCTZsk2QICaSRAImUNhSgFgDshGTkLaBoSnDxWoJLH7zlBI8JsSpzUJJCzoifA+FTQOVdkokVLXtOc4AUgdYiAR07wmpUaIw1p+kzLg4UljIiKqpfVOpa5xC/RpCNuq0aiPokl0/9k=";
 
 export default function MuseDataLanding() {
   const [mobOpen, setMobOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -73,449 +82,610 @@ export default function MuseDataLanding() {
 
   return (
     <>
-      <Script
-        src="https://www.buildmyagent.io/widget/69706ea5e966c51847e406ff/widget-professional.js?widgetId=69706ea5e966c51847e406ff"
-        strategy="lazyOnload"
-      />
-
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Bodoni+Moda:ital,wght@0,400;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; font-size: 15px; }
+
         :root {
-          --void:      #ffffff;
-          --deep:      #f7f9fa;
-          --surface:   #eef4f7;
-          --line:      rgba(26,78,102,0.1);
-          --line-g:    rgba(26,78,102,0.2);
-          --line-g2:   rgba(26,78,102,0.4);
-          --gold:      #1a4e66;
-          --gold-lt:   #2e7a96;
-          --cream:     #0d1f2d;
-          --cream-2:   #2c4a5c;
-          --cream-3:   #4a6d80;
-          --ff-d:      'Cormorant Garamond', Georgia, serif;
-          --ff-b:      'Bodoni Moda', Georgia, serif;
-          --ff-s:      'Montserrat', sans-serif;
+          --nav-bg:        #f6f8f8;
+          --nav-text:      #b5c9ce;
+          --nav-active:    #1c3342;
+          --nav-border:    #dce4e8;
+          --connect-bg:    #f6f8f8;
+          --connect-text:  #3a4e58;
+          --connect-border:#8f9ba1;
+
+          --hero-bg:       #092e42;
+          --hero-h1:       #ffffff;
+          --hero-body:     rgba(255,255,255,0.55);
+          --hero-label:    #5997b0;
+          --hero-line:     #5997b0;
+
+          --section-bg:    #f1f7fa;
+          --section-white: #ffffff;
+          --card-border:   #5e96aa;
+
+          --label-color:   #7a9daa;
+          --h2-color:      #0d2b3a;
+          --body-color:    #3a5a6a;
+          --bullet-color:  #5997b0;
+          --list-text:     #3a5464;
+          --divider:       #d4e4eb;
+
+          --cta-bg:        #092e42;
+          --cta-accent:    #39a2ca;
+          --cta-body:      rgba(255,255,255,0.65);
+          --btn-bg:        #39a2ca;
+          --btn-text:      #ffffff;
+          --btn-fine:      #4a6e7e;
+
+          --footer-bg:     #092e42;
+          --footer-text:   rgba(255,255,255,0.55);
+          --footer-links:  rgba(255,255,255,0.35);
+
+          --ff: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        body { background: var(--void); color: var(--cream); font-family: var(--ff-s); font-weight: 300; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--line-g); }
 
-        .wrap { max-width: 1200px; margin: 0 auto; padding: 0 52px; position: relative; z-index: 1; }
-        @media(max-width:640px){ .wrap { padding: 0 24px; } }
+        ::selection { background: rgba(57,162,202,0.2); }
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-thumb { background: var(--hero-label); }
 
-        .label { font-family: var(--ff-s); font-size: 11px; font-weight: 400; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
-        .rule  { display: inline-block; width: 32px; height: 1px; background: var(--gold); vertical-align: middle; margin-right: 16px; }
+        body {
+          background: var(--section-white);
+          color: var(--h2-color);
+          font-family: var(--ff);
+          font-weight: 400;
+          line-height: 1.65;
+          -webkit-font-smoothing: antialiased;
+          overflow-x: hidden;
+          padding-bottom: 64px;
+        }
+        @media(max-width:768px){ body { padding-bottom: 120px; } }
+        @media(max-width:480px){ body { padding-bottom: 140px; } }
 
-        /* reveal */
-        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
-        .reveal.on { opacity: 1; transform: none; }
+        .w { max-width: 1200px; margin: 0 auto; padding: 0 56px; }
+        @media(max-width:900px){ .w { padding: 0 32px; } }
+        @media(max-width:640px){ .w { padding: 0 20px; } }
 
-        /* NAV */
-        #museNav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: #0a2433; border-bottom: 1px solid rgba(26,78,102,0.4); transition: box-shadow 0.3s; }
-        #museNav.scrolled { box-shadow: 0 4px 32px rgba(0,0,0,0.18); }
-        .nav-wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
-        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
-        .nav-wordmark { font-family: var(--ff-s); font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #e8f4f8; }
-        .nav-links { display: flex; align-items: center; list-style: none; margin-left: 24px; }
-        .nav-links a { font-family: var(--ff-s); font-size: 11px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(232,244,248,0.7); text-decoration: none; padding: 0 12px; height: 56px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
-        .nav-links a:hover { color: #e8f4f8; border-bottom-color: #1a4e66; }
-        .nav-links a.srg { color: #e8f4f8; font-weight: 500; border-bottom: 2px solid #2e7a96; }
-        .nav-connect { flex-shrink: 0; margin-left: 16px; font-family: var(--ff-s); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #e8f4f8; background: #1a4e66; padding: 9px 22px; text-decoration: none; border: 1px solid #1a4e66; transition: background 0.2s; white-space: nowrap; }
-        .nav-connect:hover { background: #2e7a96; border-color: #2e7a96; }
-        .ham { display: none; flex-direction: column; gap: 5px; cursor: pointer; margin-left: 16px; }
-        .ham span { width: 22px; height: 1.5px; background: #e8f4f8; display: block; }
-        @media(max-width:860px){ .nav-links { display: none; } .ham { display: flex; } }
-        .mob-menu { display: none; position: fixed; top: 56px; left: 0; right: 0; z-index: 199; background: rgba(5,5,8,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); padding: 32px 24px 40px; flex-direction: column; }
-        .mob-menu.open { display: flex; }
-        .mob-menu a { font-size: 13px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,244,248,0.7); text-decoration: none; padding: 16px 0; border-bottom: 1px solid var(--line); transition: color 0.2s; }
-        .mob-menu a:hover { color: #e8f4f8; }
-        .mob-apply { margin-top: 24px; text-align: center; border: 1px solid #1a4e66 !important; color: #2e7a96 !important; padding: 14px !important; font-size: 10px; letter-spacing: 0.2em; }
+        /* ── FADE ── */
+        .fade { opacity: 0; transform: translateY(22px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+        .fade.in { opacity: 1; transform: none; }
 
-        /* HERO */
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
-        @keyframes pulse  { 0%,100%{opacity:1;box-shadow:0 0 12px #1a4e66;} 50%{opacity:0.4;box-shadow:0 0 4px #1a4e66;} }
-        #hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: 56px; overflow: hidden; background: #0a1e2c; }
-        .hero-bg  { position: absolute; inset: 0; background-image: url('/background.png'); background-size: cover; background-position: center; opacity: 0.18; }
-        .hero-ov  { position: absolute; inset: 0; background: linear-gradient(135deg,rgba(10,20,30,0.85),rgba(10,36,51,0.7)); }
-        .hero-in  { padding: 120px 0 140px; position: relative; z-index: 1; }
-        .hero-ol  { display: flex; align-items: center; margin-bottom: 56px; opacity: 0; animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
-        .hero-dot { width:6px; height:6px; border-radius:50%; background:#2e7a96; margin-right:14px; box-shadow:0 0 12px #1a4e66; animation: pulse 3s ease-in-out infinite; }
-        .hero-h1  { font-family: var(--ff-d); font-size: clamp(64px,10vw,130px); font-weight: 300; line-height: 0.9; letter-spacing: -0.03em; color: #e8f4f8; opacity: 0; animation: fadeUp 1.1s cubic-bezier(0.16,1,0.3,1) 0.35s forwards; }
-        .hero-h1 .it  { font-style: italic; color: #2e7a96; }
-        .hero-h1 .i1  { padding-left: clamp(40px,7vw,120px); display: block; }
-        .hero-h1 .i2  { padding-left: clamp(80px,14vw,240px); display: block; }
-        .hero-bot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 96px; gap: 60px; flex-wrap: wrap; opacity: 0; animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.65s forwards; }
-        .hero-desc { max-width: 460px; font-size: 16px; font-weight: 300; line-height: 1.85; color: rgba(232,244,248,0.75); border-left: 2px solid #1a4e66; padding-left: 28px; }
-        .hero-acts { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+        /* ── NAV ── */
+        #nav {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+          background: var(--nav-bg);
+          border-bottom: 1px solid var(--nav-border);
+          transition: box-shadow 0.3s;
+        }
+        #nav.scrolled { box-shadow: 0 2px 24px rgba(9,46,66,0.08); }
+        .nav-inner {
+          display: flex; align-items: center; height: 82px;
+          max-width: 1200px; margin: 0 auto; padding: 0 48px;
+        }
+        @media(max-width:900px){ .nav-inner { padding: 0 32px; } }
+        .nav-logo {
+          display: flex; align-items: center; gap: 12px;
+          text-decoration: none; flex-shrink: 0; margin-right: 52px; line-height: 1;
+        }
+        .nav-mark { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .nav-mark img { width: 40px; height: 40px; object-fit: contain; display: block; }
+        .nav-word { font-size: 0.933rem; font-weight: 700; letter-spacing: 0.22em; color: var(--nav-active); text-transform: uppercase; line-height: 1; white-space: nowrap; }
+        .nav-links { display: flex; list-style: none; flex: 1; align-items: stretch; height: 82px; margin: 0; padding: 0; }
+        .nav-links li { display: flex; align-items: center; }
+        .nav-links a {
+          display: flex; align-items: center;
+          font-size: 0.733rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+          color: #8fa8b2; text-decoration: none; white-space: nowrap;
+          padding: 0 15px; height: 82px;
+          border-bottom: 2px solid transparent;
+          transition: color 0.2s, border-color 0.2s; line-height: 1;
+        }
+        .nav-links a:hover { color: var(--nav-active); }
+        .nav-links a.active { color: var(--nav-active); font-weight: 600; border-bottom-color: var(--hero-label); }
+        .nav-connect {
+          display: flex; align-items: center; align-self: center; flex-shrink: 0; margin-left: auto;
+          font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1;
+          color: var(--connect-text); background: transparent;
+          padding: 12px 26px; text-decoration: none; white-space: nowrap;
+          border: 1.5px solid var(--connect-border);
+          transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .nav-connect:hover { background: var(--hero-bg); color: #fff; border-color: var(--hero-bg); }
+        .ham { display: none; flex-direction: column; justify-content: center; gap: 6px; cursor: pointer; margin-left: 16px; align-self: center; flex-shrink: 0; }
+        .ham span { width: 22px; height: 1.5px; background: var(--nav-active); display: block; }
+        @media(max-width:980px){ .nav-links a { padding: 0 11px; font-size: 0.667rem; } }
+        @media(max-width:780px){ .nav-links { display: none; } .ham { display: flex; } .nav-connect { display: none; } }
 
-        /* BUTTONS */
-        .btn-g  { display: inline-flex; align-items: center; gap: 16px; background: var(--gold); color: #fff; font-family: var(--ff-s); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; padding: 18px 40px; text-decoration: none; transition: background 0.25s, gap 0.25s; border: none; cursor: pointer; }
-        .btn-g:hover  { background: #1a5c7a; gap: 22px; }
-        .btn-gh { display: inline-flex; align-items: center; gap: 14px; border: 1px solid var(--line-g2); color: rgba(232,244,248,0.7); font-family: var(--ff-s); font-size: 11px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; padding: 18px 40px; text-decoration: none; transition: border-color 0.25s, color 0.25s, gap 0.25s; background: transparent; cursor: pointer; }
-        .btn-gh:hover { border-color: #1a4e66; color: #e8f4f8; gap: 20px; }
-        .btn-gh-dark { border-color: var(--line-g2); color: var(--cream-2); }
-        .btn-gh-dark:hover { border-color: var(--gold); color: var(--gold); }
-        .arr { display:inline-block; width:18px; height:1px; background:currentColor; position:relative; flex-shrink:0; }
-        .arr::after { content:''; position:absolute; right:-1px; top:-3px; border:3px solid transparent; border-left:5px solid currentColor; }
+        .mob-nav {
+          display: none; position: fixed; top: 82px; left: 0; right: 0; z-index: 199;
+          background: var(--nav-bg); border-bottom: 1px solid var(--nav-border);
+          padding: 24px 20px 32px; flex-direction: column;
+        }
+        .mob-nav.open { display: flex; }
+        .mob-nav a { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8fa8b2; text-decoration: none; padding: 14px 0; border-bottom: 1px solid var(--nav-border); transition: color 0.2s; }
+        .mob-nav a:hover { color: var(--nav-active); }
+        .mob-nav .mob-cta { margin-top: 20px; background: var(--btn-bg); color: #fff !important; text-align: center; padding: 14px !important; font-weight: 600; letter-spacing: 0.16em; border: none; }
 
-        /* MARQUEE */
-        .mq-strip { border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:18px 0; background:var(--deep); }
-        .mq-track { display:flex; animation: marquee 28s linear infinite; width:max-content; }
-        .mq-item  { display:inline-flex; align-items:center; gap:28px; padding:0 40px; font-size:11px; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:var(--cream-3); white-space:nowrap; }
-        .mq-item::before { content:'✦'; font-size:6px; color:var(--gold); }
-        @keyframes marquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+        /* ── HERO ── */
+        #hero {
+          min-height: 100vh; padding-top: 82px;
+          background: var(--hero-bg);
+          display: flex; flex-direction: column; justify-content: center;
+          position: relative; overflow: hidden;
+        }
+        .hero-bg-img { position: absolute; inset: 0; background-image: url('/background.png'); background-size: cover; background-position: center; opacity: 0.1; pointer-events: none; }
+        .hero-inner { padding: 96px 56px 108px; position: relative; z-index: 1; text-align: left; max-width: 580px; }
 
-        /* GLANCE */
-        .glance-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }
-        .glance-cell { padding:64px 56px; border-right:1px solid var(--line); transition:background 0.3s; }
-        .glance-cell:last-child { border-right:none; }
-        .glance-cell:hover { background:var(--deep); }
-        .g-num  { font-family:var(--ff-d); font-size:clamp(44px,5vw,72px); font-weight:300; line-height:1; color:var(--cream); letter-spacing:-0.03em; margin-bottom:12px; }
-        .g-num em { font-style:italic; color:var(--gold); font-size:0.65em; }
-        .g-lbl  { font-size:10px; font-weight:500; letter-spacing:0.28em; text-transform:uppercase; color:var(--cream-3); }
-        @media(max-width:768px){ .glance-grid{grid-template-columns:1fr 1fr;} .glance-cell{border-bottom:1px solid var(--line);} }
+        .hero-label-row { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; opacity: 0; animation: up 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s forwards; }
+        .hero-label-line { width: 32px; height: 1px; background: var(--hero-line); }
+        .hero-label-text { font-size: 0.667rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--hero-label); }
 
-        /* WHAT */
-        #what { padding:120px 0; border-top:1px solid var(--line); }
-        .what-hdr { display:flex; align-items:flex-end; justify-content:space-between; gap:40px; flex-wrap:wrap; margin-bottom:64px; }
-        .what-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); }
-        .what-tile { background:var(--deep); padding:40px 32px; text-decoration:none; display:flex; flex-direction:column; position:relative; overflow:hidden; transition:background 0.3s; }
-        .what-tile::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform 0.35s ease; }
-        .what-tile:hover { background:var(--surface); }
-        .what-tile:hover::after { transform:scaleX(1); }
-        .wt-n  { font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
-        .wt-t  { font-family:var(--ff-d); font-size:22px; font-weight:400; color:var(--cream); margin-bottom:12px; line-height:1.2; }
-        .wt-b  { font-size:14px; font-weight:300; color:var(--cream-2); line-height:1.75; flex:1; margin-bottom:24px; }
-        .wt-lk { display:inline-flex; align-items:center; gap:8px; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold); transition:gap 0.2s; }
-        .what-tile:hover .wt-lk { gap:14px; }
-        .wt-ar { display:inline-block; width:16px; height:1px; background:var(--gold); position:relative; }
-        .wt-ar::after { content:''; position:absolute; right:0; top:-3px; border:3px solid transparent; border-left:5px solid var(--gold); }
-        @media(max-width:900px){ .what-grid{grid-template-columns:repeat(2,1fr);} }
-        @media(max-width:540px){ .what-grid{grid-template-columns:1fr;} }
+        .hero-h1 { font-family: var(--ff); font-size: clamp(2rem,3.8vw,3rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.01em; color: var(--hero-h1); text-align: left; opacity: 0; animation: up 1s cubic-bezier(0.16,1,0.3,1) 0.22s forwards; }
+        .hero-h1 .accent { color: var(--cta-accent); }
 
-        /* PATHS */
-        #paths { padding:120px 0; border-top:1px solid var(--line); background:var(--deep); }
+        .hero-body { margin-top: 2rem; max-width: 520px; font-size: 0.933rem; font-weight: 400; line-height: 1.75; color: var(--hero-body); opacity: 0; animation: up 1s cubic-bezier(0.16,1,0.3,1) 0.38s forwards; }
 
-        /* PHILOSOPHY */
-        #philosophy { padding:120px 0; border-top:1px solid var(--line); }
-        .phil-q { font-family:var(--ff-d); font-size:clamp(26px,3vw,42px); font-weight:400; font-style:italic; line-height:1.35; letter-spacing:-0.01em; color:var(--cream); margin-bottom:36px; }
-        .phil-q em { color:var(--gold-lt); font-style:normal; }
-        .phil-pills { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:36px; }
-        .phil-pill { font-size:11px; font-weight:400; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream-3); border:1px solid var(--line); padding:10px 20px; transition:border-color 0.2s, color 0.2s; }
-        .phil-pill:hover { border-color:var(--line-g); color:var(--cream); }
+        .hero-actions { margin-top: 48px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; opacity: 0; animation: up 1s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
 
-        /* CTA */
-        #cta { padding:160px 0; border-top:1px solid var(--line); text-align:center; position:relative; overflow:hidden; }
-        #cta::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(26,78,102,0.05) 0%,transparent 65%); pointer-events:none; }
-        .cta-h2 { font-family:var(--ff-d); font-size:clamp(42px,6vw,80px); font-weight:400; line-height:1.05; letter-spacing:-0.025em; color:var(--cream); max-width:760px; margin:0 auto 28px; }
-        .cta-h2 em { font-style:italic; color:var(--gold-lt); }
+        @keyframes up { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: none; } }
 
-        /* SECTION TYPOGRAPHY */
-        .sec-h2 { font-family:var(--ff-d); font-size:clamp(36px,4vw,54px); font-weight:400; line-height:1.1; letter-spacing:-0.02em; color:var(--cream); }
-        .sec-h2 em { font-style:italic; color:var(--gold-lt); }
-        .sec-sub { font-size:16px; font-weight:300; line-height:1.8; color:var(--cream-3); }
+        /* ── BUTTONS ── */
+        .btn-primary { display: inline-flex; align-items: center; gap: 14px; background: var(--btn-bg); color: var(--btn-text); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 15px 34px; text-decoration: none; transition: background 0.25s, gap 0.25s; border: none; cursor: pointer; }
+        .btn-primary:hover { background: #2b8fb5; gap: 20px; }
+        .btn-ghost { display: inline-flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; padding: 15px 34px; text-decoration: none; transition: border-color 0.25s, color 0.25s; background: transparent; cursor: pointer; }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.6); color: #fff; }
+        .btn-outline-dark { display: inline-flex; align-items: center; gap: 12px; border: 1px solid #c4d8e2; color: var(--body-color); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; padding: 15px 34px; text-decoration: none; transition: border-color 0.25s, color 0.25s; background: transparent; cursor: pointer; }
+        .btn-outline-dark:hover { border-color: var(--hero-label); color: var(--h2-color); }
+        .arr { display: inline-block; width: 16px; height: 1px; background: currentColor; position: relative; flex-shrink: 0; }
+        .arr::after { content: ''; position: absolute; right: -1px; top: -3px; border: 3px solid transparent; border-left: 5px solid currentColor; }
 
-        /* FOOTER */
-        footer { border-top:1px solid var(--line); background:#0a2433; }
-        .foot-top { display:grid; grid-template-columns:1.8fr 1fr 1fr 1fr; gap:56px; padding:72px 0 64px; }
-        .foot-wm  { font-family:var(--ff-s); font-size:12px; font-weight:500; letter-spacing:0.3em; text-transform:uppercase; color:#fff; margin-bottom:14px; }
-        .foot-wm span { font-weight:200; color:#2e7a96; }
-        .foot-tag { font-size:13px; font-weight:300; color:rgba(232,244,248,0.7); line-height:1.7; max-width:260px; margin-bottom:22px; }
-        .foot-contact a { font-size:12px; letter-spacing:0.06em; color:#2e7a96; text-decoration:none; transition:color 0.2s; }
-        .foot-contact a:hover { color:#5aa8c4; }
-        .foot-ch { font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(232,244,248,0.45); margin-bottom:20px; font-weight:400; }
-        .foot-list { list-style:none; display:flex; flex-direction:column; gap:11px; }
-        .foot-list a { font-size:14px; font-weight:300; color:rgba(232,244,248,0.65); text-decoration:none; transition:color 0.25s; }
-        .foot-list a:hover { color:#fff; }
-        .foot-nl { display:flex; margin-top:16px; }
-        .foot-nl input { flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-right:none; color:#fff; font-family:var(--ff-s); font-size:12px; font-weight:300; padding:10px 14px; outline:none; transition:border-color 0.2s; }
-        .foot-nl input::placeholder { color:rgba(232,244,248,0.4); }
-        .foot-nl input:focus { border-color:#2e7a96; }
-        .foot-nl button { background:#1a4e66; border:1px solid #1a4e66; color:#fff; font-family:var(--ff-s); font-size:9px; letter-spacing:0.18em; text-transform:uppercase; padding:10px 16px; cursor:pointer; transition:all 0.25s; }
-        .foot-nl button:hover { background:#2e7a96; }
-        .foot-bot { border-top:1px solid rgba(255,255,255,0.1); padding:22px 0; display:flex; justify-content:space-between; align-items:center; }
-        .foot-copy { font-size:12px; letter-spacing:0.1em; color:rgba(232,244,248,0.3); font-weight:300; }
-        .foot-legal { display:flex; gap:22px; }
-        .foot-legal a { font-size:12px; letter-spacing:0.1em; color:rgba(232,244,248,0.3); text-decoration:none; transition:color 0.2s; }
-        .foot-legal a:hover { color:rgba(232,244,248,0.6); }
-        @media(max-width:900px){ .foot-top{grid-template-columns:1fr 1fr;gap:40px;} }
-        @media(max-width:540px){ .foot-top{grid-template-columns:1fr;} .foot-bot{flex-direction:column;gap:14px;text-align:center;} }
+        /* ── TICKER ── */
+        .ticker { border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); overflow: hidden; padding: 15px 0; background: var(--section-bg); }
+        .ticker-track { display: flex; animation: ticker 30s linear infinite; width: max-content; }
+        .ticker-item { display: inline-flex; align-items: center; gap: 22px; padding: 0 32px; font-size: 0.633rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--label-color); white-space: nowrap; }
+        .ticker-item::before { content: '•'; font-size: 0.5rem; color: var(--bullet-color); }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ── METRICS ── */
+        #metrics { display: grid; grid-template-columns: repeat(3,1fr); border-bottom: 1px solid var(--divider); background: var(--section-white); }
+        .metric-cell { padding: 52px 48px; border-right: 1px solid var(--divider); position: relative; overflow: hidden; transition: background 0.3s; }
+        .metric-cell:last-child { border-right: none; }
+        .metric-cell:hover { background: var(--section-bg); }
+        .metric-cell::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--hero-label); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+        .metric-cell:hover::after { transform: scaleX(1); }
+        .metric-n { font-family: var(--ff); font-size: clamp(2rem,3.5vw,3.2rem); font-weight: 300; line-height: 1; color: var(--h2-color); letter-spacing: -0.02em; margin-bottom: 10px; }
+        .metric-n span { color: var(--hero-label); font-weight: 300; font-size: 0.68em; }
+        .metric-l { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--label-color); }
+
+        /* ── SECTION SHARED ── */
+        .sec { padding: 120px 0; border-top: 1px solid var(--divider); position: relative; overflow: hidden; }
+        .sec-bg { background: var(--section-bg); }
+        .sec-dark { background: var(--hero-bg); }
+
+        .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.633rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--hero-label); }
+        .sec-label::before { content: ''; width: 28px; height: 1px; background: var(--hero-label); display: block; }
+
+        .sec-h2 { font-family: var(--ff); font-size: clamp(1.6rem,2.8vw,2.6rem); font-weight: 300; line-height: 1.15; letter-spacing: -0.01em; color: var(--h2-color); margin-bottom: 0; }
+        .sec-h2 em { font-style: normal; color: var(--cta-accent); }
+        .sec-dark .sec-h2 { color: #fff; }
+
+        .sec-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; flex-wrap: wrap; margin-bottom: 64px; }
+        .sec-sub { font-size: 0.867rem; font-weight: 400; line-height: 1.75; color: var(--body-color); max-width: 380px; }
+        .sec-dark .sec-sub { color: rgba(255,255,255,0.5); }
+
+        /* ── PILLARS ── */
+        .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--divider); }
+        .pillar { background: var(--section-white); padding: 42px 32px; text-decoration: none; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: background 0.3s; }
+        .pillar::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--card-border); transform: scaleY(0); transform-origin: bottom; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .pillar:hover { background: var(--section-bg); }
+        .pillar:hover::before { transform: scaleY(1); }
+        .pillar-n { font-size: 0.633rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--hero-label); margin-bottom: 20px; }
+        .pillar-title { font-family: var(--ff); font-size: 1.133rem; font-weight: 500; color: var(--h2-color); margin-bottom: 12px; line-height: 1.2; }
+        .pillar-body { font-size: 0.867rem; font-weight: 400; color: var(--body-color); line-height: 1.75; flex: 1; margin-bottom: 24px; }
+        .pillar-link { display: inline-flex; align-items: center; gap: 9px; font-size: 0.633rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hero-label); transition: gap 0.2s; }
+        .pillar:hover .pillar-link { gap: 14px; }
+
+        /* ── WHY MUSEDATA ── */
+        .why-card { background: var(--section-bg); border-left: 3px solid var(--card-border); padding: 60px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+        .why-h3 { font-family: var(--ff); font-size: 1.267rem; font-weight: 500; color: var(--h2-color); margin-bottom: 16px; line-height: 1.2; }
+        .why-body { font-size: 0.867rem; font-weight: 400; color: var(--body-color); line-height: 1.8; }
+        .why-list { list-style: none; display: flex; flex-direction: column; }
+        .why-list li { display: flex; align-items: baseline; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--divider); font-size: 0.867rem; font-weight: 400; color: var(--list-text); line-height: 1.5; }
+        .why-list li:first-child { border-top: 1px solid var(--divider); }
+        .why-list li::before { content: '•'; color: var(--bullet-color); font-size: 0.6rem; flex-shrink: 0; margin-top: 2px; }
+
+        /* ── PARTNERSHIP ── */
+        .partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--divider); }
+        .partner-cell { background: var(--section-white); padding: 60px 52px; position: relative; }
+        .partner-cell.featured { background: var(--hero-bg); border-left: 3px solid var(--hero-label); }
+        .partner-cell.featured .pc-label { color: var(--hero-label); }
+        .partner-cell.featured .pc-title { color: #fff; }
+        .partner-cell.featured .pc-body { color: rgba(255,255,255,0.6); }
+        .pc-label { font-size: 0.633rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--hero-label); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .pc-label::before { content: ''; width: 24px; height: 1px; background: currentColor; display: block; }
+        .pc-title { font-family: var(--ff); font-size: 1.467rem; font-weight: 400; line-height: 1.2; color: var(--h2-color); margin-bottom: 18px; }
+        .pc-body { font-size: 0.867rem; font-weight: 400; line-height: 1.8; color: var(--body-color); margin-bottom: 32px; }
+        .pc-cta { display: inline-flex; align-items: center; gap: 10px; font-size: 0.633rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hero-label); text-decoration: none; transition: gap 0.2s; }
+        .partner-cell.featured .pc-cta { color: rgba(255,255,255,0.7); }
+        .pc-cta:hover { gap: 16px; }
+
+        /* ── PHILOSOPHY ── */
+        .phil-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: start; }
+        .phil-quote { font-family: var(--ff); font-size: clamp(1rem,1.8vw,1.467rem); font-weight: 300; font-style: italic; line-height: 1.55; color: var(--h2-color); margin-bottom: 28px; padding-left: 24px; border-left: 3px solid var(--card-border); }
+        .phil-quote em { color: var(--cta-accent); font-style: normal; font-weight: 600; }
+        .phil-attr { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--hero-label); padding-left: 24px; }
+        .phil-principles { display: flex; flex-direction: column; }
+        .principle { display: grid; grid-template-columns: 40px 1fr; padding: 24px 0; border-bottom: 1px solid var(--divider); }
+        .principle:first-child { border-top: 1px solid var(--divider); }
+        .p-n { font-size: 0.633rem; font-weight: 700; color: var(--hero-label); padding-top: 2px; }
+        .p-title { font-family: var(--ff); font-size: 1rem; font-weight: 500; color: var(--h2-color); margin-bottom: 5px; }
+        .p-text { font-size: 0.867rem; font-weight: 400; color: var(--body-color); line-height: 1.7; }
+
+        /* ── PROCESS (dark) ── */
+        .process-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(255,255,255,0.08); }
+        .process-cell { background: rgba(255,255,255,0.04); padding: 40px 32px; position: relative; transition: background 0.3s; }
+        .process-cell:hover { background: rgba(255,255,255,0.08); }
+        .process-cell::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--cta-accent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+        .process-cell:hover::after { transform: scaleX(1); }
+        .proc-n { font-size: 2.6rem; font-weight: 300; line-height: 1; letter-spacing: -0.02em; color: rgba(255,255,255,0.07); margin-bottom: 18px; }
+        .proc-title { font-family: var(--ff); font-size: 1rem; font-weight: 500; color: #fff; margin-bottom: 6px; }
+        .proc-day { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cta-accent); margin-bottom: 12px; }
+        .proc-text { font-size: 0.867rem; font-weight: 400; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+        /* ── CTA ── */
+        #cta-section { background: var(--hero-bg); padding: 120px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+        .cta-inner { max-width: 720px; }
+        .cta-h2 { font-family: var(--ff); font-size: clamp(1.8rem,3.5vw,3rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.01em; color: #fff; margin-bottom: 20px; }
+        .cta-h2 em { color: var(--cta-accent); font-style: normal; }
+        .cta-sub { font-size: 0.867rem; font-weight: 400; color: rgba(255,255,255,0.6); max-width: 500px; margin-bottom: 40px; line-height: 1.75; }
+        .cta-check { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 32px; max-width: 480px; }
+        .cta-check input[type="checkbox"] { width: 14px; height: 14px; margin-top: 3px; flex-shrink: 0; accent-color: var(--btn-bg); cursor: pointer; }
+        .cta-check label { font-size: 0.733rem; color: rgba(255,255,255,0.45); line-height: 1.6; cursor: pointer; }
+        .cta-check label a { color: var(--cta-accent); text-decoration: none; }
+        .cta-fine { margin-top: 18px; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--btn-fine); }
+        .cta-fine span { color: rgba(255,255,255,0.25); margin: 0 10px; }
+
+        /* ── FOOTER (fixed slim) ── */
+        footer {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+          background: var(--footer-bg);
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+        .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
+        .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
+        .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
+        .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:1024px){
+          .pillars { grid-template-columns: repeat(2,1fr); }
+          .partner-grid { grid-template-columns: 1fr; }
+          .phil-layout { grid-template-columns: 1fr; gap: 48px; }
+          .process-row { grid-template-columns: repeat(2,1fr); }
+          .why-card { grid-template-columns: 1fr; gap: 40px; padding: 48px 48px; }
+        }
+        @media(max-width:768px){
+          .sec { padding: 72px 0; }
+          .sec-head-row { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 40px; }
+          .sec-sub { max-width: 100%; font-size: 0.8rem; }
+          #metrics { grid-template-columns: 1fr 1fr; }
+          .metric-cell { padding: 36px 28px; }
+          .metric-cell:nth-child(3) { grid-column: span 2; border-right: none; }
+          .hero-inner { padding: 56px 24px 72px; }
+          .hero-h1 { font-size: clamp(1.7rem,5vw,2.4rem); }
+          .hero-body { font-size: 0.867rem; margin-top: 1.5rem; }
+          .hero-actions { margin-top: 2rem; gap: 12px; }
+          .why-card { padding: 36px 28px; }
+          .partner-cell { padding: 40px 28px; }
+          #cta-section { padding: 80px 0; }
+          .footer-slim { flex-wrap: wrap; gap: 14px; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 10px; }
+          .footer-links-row { flex-wrap: wrap; gap: 14px; }
+        }
+        @media(max-width:480px){
+          .sec { padding: 56px 0; }
+          #metrics { grid-template-columns: 1fr; }
+          .metric-cell { border-right: none; border-bottom: 1px solid var(--divider); padding: 28px 18px; }
+          .metric-cell:last-child { border-bottom: none; }
+          .metric-cell:nth-child(3) { grid-column: span 1; }
+          .hero-inner { padding: 44px 18px 56px; }
+          .hero-actions { flex-direction: column; align-items: stretch; margin-top: 1.6rem; gap: 10px; }
+          .btn-primary, .btn-ghost { justify-content: center; width: 100%; }
+          .pillars { grid-template-columns: 1fr; }
+          .why-card { padding: 28px 20px; gap: 32px; }
+          .partner-cell { padding: 32px 20px; }
+          .phil-quote { padding-left: 18px; }
+          .phil-attr { padding-left: 18px; }
+          .process-row { grid-template-columns: 1fr; }
+          #cta-section { padding: 64px 0; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+        }
       `}</style>
 
       {/* ── NAV ── */}
-      <nav id="museNav" className={scrolled ? "scrolled" : ""}>
-        <div className="wrap">
-          <div className="nav-wrap">
-            <a href="#" className="nav-logo">
-              <svg width="32" height="32" viewBox="0 0 22 22" fill="none" style={{ background: "#fff", padding: 4 }}>
-                <rect x="0"  y="0"  width="6" height="6" fill="#1a4e66"/>
-                <rect x="8"  y="0"  width="6" height="6" fill="#0a2433"/>
-                <rect x="16" y="0"  width="6" height="6" fill="#1a4e66"/>
-                <rect x="0"  y="8"  width="6" height="6" fill="#1a4e66"/>
-                <rect x="8"  y="8"  width="6" height="6" fill="#1a4e66"/>
-                <rect x="16" y="8"  width="6" height="6" fill="#0a2433"/>
-                <rect x="0"  y="16" width="6" height="6" fill="#1a4e66"/>
-                <rect x="8"  y="16" width="6" height="6" fill="#1a4e66"/>
-                <rect x="16" y="16" width="6" height="6" rx="3" fill="#000"/>
-              </svg>
-              <span className="nav-wordmark">MUSEDATA</span>
-            </a>
-            <ul className="nav-links">
-              {[
-                ["/companies","Companies"],["/people","People"],
-                ["/strategic-resource-group","SRG","srg"],["/founders","Founders","srg"],
-                ["#about","About"],["/apply","Jobs"],
-              ].map(([href,label,cls]) => (
-                <li key={href}><a href={href} className={cls || ""}>{label}</a></li>
-              ))}
-            </ul>
-            <a href="mailto:partners@musedata.ai" className="nav-connect">Connect</a>
-            <div className="ham" onClick={() => setMobOpen(o => !o)}>
-              <span /><span /><span />
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
-      <div className={`mob-menu${mobOpen ? " open" : ""}`}>
-        {[["/companies","Companies"],["/people","People"],["/strategic-resource-group","SRG"],["/founders","Founders"],["#about","About"],["/apply","Jobs"]].map(([href,label]) => (
-          <a key={href} href={href} onClick={() => setMobOpen(false)}>{label}</a>
-        ))}
-        <a href="/funding" className="mob-apply" onClick={() => setMobOpen(false)}>Apply for Capital</a>
-      </div>
+     
 
       {/* ── HERO ── */}
       <section id="hero">
-        <div className="hero-bg" />
-        <div className="hero-ov" />
-        <div className="wrap">
-          <div className="hero-in">
-            <div className="hero-ol">
-              <div className="hero-dot" />
-              <span className="label" style={{ color: "rgba(232,244,248,0.8)" }}>
-                Growth Equity &nbsp;•&nbsp; New York · Los Angeles · London &nbsp;•&nbsp; Investing Globally
-              </span>
+        <div className="hero-bg-img" />
+        <div className="w">
+          <div className="hero-inner">
+            <div className="hero-label-row">
+              <div className="hero-label-line" />
+              <span className="hero-label-text">Growth Equity</span>
             </div>
             <h1 className="hero-h1">
               Conviction
-              <span className="i1"><span className="it">Capital</span> for</span>
-              <span className="i2">the Exceptional</span>
+              <span style={{ display: "block", marginTop: "0.04em" }}>Capital for</span>
+              <span style={{ display: "block", marginTop: "0.04em" }}>the <span className="accent">Exceptional</span></span>
             </h1>
-            <div className="hero-bot">
-              <p className="hero-desc">
-                MUSEDATA is a growth equity firm deploying minority capital into enterprise software and AI companies — backed by proprietary diligence, built around founders ready for their next chapter.
-              </p>
-              <div className="hero-acts">
-                <Unauthenticated>
-                  <SignInButton mode="modal" forceRedirectUrl="/funding">
-                    <button className="btn-g">Apply for Capital <span className="arr" /></button>
-                  </SignInButton>
-                </Unauthenticated>
-                <Authenticated>
-                  <Link href="/funding" className="btn-g">Apply for Capital <span className="arr" /></Link>
-                </Authenticated>
-                <Link href="/sample-report" className="btn-gh">
-                  View Evidence Pack <span className="arr" />
-                </Link>
-              </div>
+            <p className="hero-body">
+              MUSEDATA is a growth equity firm deploying minority capital into enterprise software and AI companies, selected through proprietary diligence, and partnered with founders who are building something permanent.
+            </p>
+            <div className="hero-actions">
+              <Unauthenticated>
+                <SignInButton mode="modal" forceRedirectUrl="/funding">
+                  <button className="btn-primary">Apply for Capital <span className="arr" /></button>
+                </SignInButton>
+              </Unauthenticated>
+              <Authenticated>
+                <Link href="/funding" className="btn-primary">Apply for Capital <span className="arr" /></Link>
+              </Authenticated>
+         
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── MARQUEE ── */}
-      <div className="mq-strip">
-        <div className="mq-track">
-          {MARQUEE_ITEMS.map((item, i) => (
-            <span key={i} className="mq-item">{item}</span>
+      {/* ── TICKER ── */}
+      <div className="ticker">
+        <div className="ticker-track">
+          {TICKER_ITEMS.map((item, i) => (
+            <span key={i} className="ticker-item">{item}</span>
           ))}
         </div>
       </div>
 
-      {/* ── AT A GLANCE ── */}
-      <section id="glance">
-        <div className="glance-grid">
-          {[
-            { num: "$3–25", unit: "M",  lbl: "ARR at Entry" },
-            { num: "$5–25", unit: "M",  lbl: "Check Size" },
-            { num: "$100",  unit: "M+", lbl: "Portfolio Scale" },
-          ].map(({ num, unit, lbl }, i) => (
-            <Reveal key={lbl} delay={i * 0.1} className="glance-cell">
-              <div className="g-num">{num}<em>{unit}</em></div>
-              <div className="g-lbl">{lbl}</div>
-            </Reveal>
-          ))}
-        </div>
+      {/* ── METRICS ── */}
+      <section id="metrics">
+        {[
+          { num: "$3–25", unit: "M",  lbl: "ARR at Entry" },
+          { num: "$5–25", unit: "M",  lbl: "Check Size" },
+          { num: "$100",  unit: "M+", lbl: "Portfolio Scale" },
+        ].map(({ num, unit, lbl }, i) => (
+          <Fade key={lbl} delay={i * 0.08} className="metric-cell">
+            <div className="metric-n">{num}<span>{unit}</span></div>
+            <div className="metric-l">{lbl}</div>
+          </Fade>
+        ))}
       </section>
 
-      {/* ── WHAT WE DO ── */}
-      <section id="what">
-        <div className="wrap">
-          <div className="what-hdr">
+      {/* ── PILLARS ── */}
+      <section className="sec">
+        <div className="w">
+          <div className="sec-head-row">
             <div>
-              <Reveal delay={0}><span className="rule" /><span className="label">What We Do</span></Reveal>
-              <Reveal delay={0.08}><h2 className="sec-h2" style={{ marginTop: 18 }}>One firm.<br /><em>Four disciplines.</em></h2></Reveal>
+              <Fade delay={0}><div className="sec-label">What We Do</div></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">One firm. <em>Four pillars.</em></h2></Fade>
             </div>
-            <Reveal delay={0.16}>
-              <p className="sec-sub" style={{ maxWidth: 360 }}>
-                From minority capital to portfolio intelligence — every part of MUSEDATA is built around the same principle: evidence before conviction.
-              </p>
-            </Reveal>
+            <Fade delay={0.16}>
+              <p className="sec-sub">Every part of MUSEDATA is built around the same principle: evidence before deployment, and partnership before capital.</p>
+            </Fade>
           </div>
-          <div className="what-grid">
-            {WHAT_TILES.map(({ n, title, href, body, link }, i) => (
-              <Reveal key={n} delay={i * 0.08}>
-                <Link href={href} className="what-tile">
-                  <div className="wt-n">{n}</div>
-                  <div className="wt-t">{title}</div>
-                  <div className="wt-b">{body}</div>
-                  <div className="wt-lk">{link} <span className="wt-ar" /></div>
+          <div className="pillars">
+            {PILLARS.map(({ n, title, href, body, link }, i) => (
+              <Fade key={n} delay={i * 0.08}>
+                <Link href={href} className="pillar">
+                  <div className="pillar-n">{n}</div>
+                  <div className="pillar-title">{title}</div>
+                  <div className="pillar-body">{body}</div>
+                  <div className="pillar-link">{link} <span className="arr" /></div>
                 </Link>
-              </Reveal>
+              </Fade>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── HOW WE PARTNER ── */}
-      <section id="paths">
-        <div className="wrap">
-          <div style={{ maxWidth: 780 }}>
-            <Reveal delay={0}><span className="rule" /><span className="label">How We Partner</span></Reveal>
-            <Reveal delay={0.08}><h2 className="sec-h2" style={{ margin: "28px 0 36px" }}>Capital with<br /><em>operational depth.</em></h2></Reveal>
-            <Reveal delay={0.16}>
-              <p style={{ fontSize: 17, fontWeight: 300, color: "var(--cream-2)", lineHeight: 1.9, marginBottom: 20 }}>
-                We deploy minority growth equity and work alongside founders as the company scales. The firm's operational capabilities — the SRG, the network, the institutional relationships — are part of how we invest, not an add-on to it.
-              </p>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <p style={{ fontSize: 17, fontWeight: 300, color: "var(--cream-2)", lineHeight: 1.9, marginBottom: 52 }}>
-                The best partnerships are built on conviction, not checklists.
-              </p>
-            </Reveal>
-            <Reveal delay={0.32}>
+      {/* ── WHY MUSEDATA ── */}
+      <section className="sec sec-bg">
+        <div className="w">
+          <div className="sec-head-row" style={{ marginBottom: 48 }}>
+            <div>
+              <Fade delay={0}><div className="sec-label">Why MUSEDATA</div></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">More than capital.</h2></Fade>
+            </div>
+          </div>
+          <Fade delay={0.16}>
+            <div className="why-card">
+              <div>
+                <h3 className="why-h3">More than capital.</h3>
+                <p className="why-body">MUSEDATA embeds seasoned operators directly inside portfolio companies to build the financial, data, and GTM infrastructure that earns institutional trust.</p>
+              </div>
+              <div>
+                <h3 className="why-h3" style={{ marginBottom: 0 }}>What you get.</h3>
+                <ul className="why-list">
+                  <li>CFO &amp; finance infrastructure layer</li>
+                  <li>Private deal flow and co-investment</li>
+                  <li>Vetted peer founder network</li>
+                  <li>Direct advisory from leadership</li>
+                  <li>Exclusive events &amp; off-record briefings</li>
+                </ul>
+                <h3 className="why-h3" style={{ marginTop: 36, marginBottom: 0 }}>Who we back.</h3>
+                <ul className="why-list">
+                  <li>Enterprise software founders</li>
+                  <li>Series A to pre-exit stage</li>
+                  <li>Global. Remote-first.</li>
+                  <li>Selective. Application-based.</li>
+                </ul>
+              </div>
+            </div>
+          </Fade>
+        </div>
+      </section>
+
+      {/* ── PARTNERSHIP ── */}
+      <section className="sec">
+        <div className="w">
+          <div className="sec-head-row">
+            <div>
+              <Fade delay={0}><div className="sec-label">How We Partner</div></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">Capital with <em>operational depth.</em></h2></Fade>
+            </div>
+          </div>
+          <div className="partner-grid">
+            <Fade delay={0} className="partner-cell featured">
+              <div className="pc-label">Primary Path</div>
+              <div className="pc-title">Minority Growth Equity</div>
+              <p className="pc-body">We deploy $5–25M minority equity into enterprise software and AI businesses at $3–25M ARR. We operate alongside management as the business scales. The firm's capabilities, the SRG, the institutional network, the operational infrastructure, are integral to the investment, not supplementary to it.</p>
               <Unauthenticated>
                 <SignInButton mode="modal" forceRedirectUrl="/funding">
-                  <button className="btn-g">Apply for Capital <span className="arr" /></button>
+                  <button className="pc-cta">Apply for Capital <span className="arr" /></button>
                 </SignInButton>
               </Unauthenticated>
               <Authenticated>
-                <Link href="/funding" className="btn-g">Apply for Capital <span className="arr" /></Link>
+                <Link href="/funding" className="pc-cta">Apply for Capital <span className="arr" /></Link>
               </Authenticated>
-            </Reveal>
+            </Fade>
+            <Fade delay={0.1} className="partner-cell">
+              <div className="pc-label">Secondary Path</div>
+              <div className="pc-title">Capital + Advisory</div>
+              <p className="pc-body">For founders who require more than capital, MUSEDATA structures bespoke arrangements combining equity deployment with direct strategic advisory, institutional introductions, and access to the full SRG platform from day one.</p>
+              <Link href="/strategic-resource-group" className="pc-cta">Learn More <span className="arr" /></Link>
+            </Fade>
           </div>
         </div>
       </section>
 
       {/* ── PHILOSOPHY ── */}
-      <section id="philosophy">
-        <div className="wrap">
-          <div style={{ maxWidth: 820 }}>
-            <Reveal delay={0}><span className="rule" /><span className="label">Investment Philosophy</span></Reveal>
-            <Reveal delay={0.08}>
-              <p className="phil-q" style={{ marginTop: 28 }}>
-                "The finest capital is not merely patient. It is{" "}
-                <em>precise</em> — deployed at the moment when a company is ready to be something permanent."
+      <section className="sec sec-bg">
+        <div className="w">
+          <div className="sec-head-row">
+            <div>
+              <Fade delay={0}><div className="sec-label">Investment Philosophy</div></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">Built on <em>evidence, not instinct.</em></h2></Fade>
+            </div>
+          </div>
+          <div className="phil-layout">
+            <Fade delay={0}>
+              <p className="phil-quote">
+                Institutional capital is not simply patient. It is <em>precise.</em> Deployed when the evidence is clear, the moment is right, and the company is built to last.
               </p>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <div className="phil-pills">
-                {["Evidence before conviction","Minority by design","Capital as a signal","Global mandate"].map(p => (
-                  <span key={p} className="phil-pill">{p}</span>
-                ))}
+              <div className="phil-attr">MUSEDATA Investment Thesis</div>
+              <div style={{ marginTop: 40 }}>
+                <Link href="/about" className="btn-outline-dark">Read Our Full Thesis <span className="arr" /></Link>
               </div>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <Link href="/about" className="btn-gh btn-gh-dark">Read Our Thesis <span className="arr" /></Link>
-            </Reveal>
+            </Fade>
+            <div className="phil-principles">
+              {[
+                { n:"01", title:"Evidence before deployment", text:"Every investment begins with proprietary diligence. We do not move on instinct or relationships alone." },
+                { n:"02", title:"Minority by design",         text:"We take minority positions. Founders retain control. Alignment comes from shared outcomes, not governance leverage." },
+                { n:"03", title:"Capital as a signal",        text:"When MUSEDATA invests, it signals institutional readiness. Our capital opens doors beyond the cheque." },
+                { n:"04", title:"Global mandate",             text:"We invest across geographies. The best enterprise software companies are not confined to a single market." },
+              ].map(({ n, title, text }, i) => (
+                <Fade key={n} delay={i * 0.08} className="principle">
+                  <div className="p-n">{n}</div>
+                  <div>
+                    <div className="p-title">{title}</div>
+                    <div className="p-text">{text}</div>
+                  </div>
+                </Fade>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PROCESS ── */}
+      <section className="sec sec-dark">
+        <div className="w">
+          <div className="sec-head-row">
+            <div>
+              <Fade delay={0}><div className="sec-label">Diligence Process</div></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">How we evaluate every opportunity.</h2></Fade>
+            </div>
+            <Fade delay={0.16}><p className="sec-sub">A structured, evidence-led process. No exceptions.</p></Fade>
+          </div>
+          <div className="process-row">
+            {PROCESS_STEPS.map(({ n, days, title, text }, i) => (
+              <Fade key={n} delay={i * 0.08} className="process-cell">
+                <div className="proc-n">{n}</div>
+                <div className="proc-day">{days}</div>
+                <div className="proc-title">{title}</div>
+                <div className="proc-text">{text}</div>
+              </Fade>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section id="cta">
-        <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
-          <Reveal delay={0}>
-            <div style={{ marginBottom: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span className="rule" /><span className="label">Begin</span>
-              <span className="rule" style={{ marginRight: 0, marginLeft: 14 }} />
-            </div>
-          </Reveal>
-          <Reveal delay={0.08}><h2 className="cta-h2">Your next chapter<br />deserves <em>the right capital</em></h2></Reveal>
-          <Reveal delay={0.16}>
-            <p style={{ fontSize: 15, fontWeight: 300, color: "var(--cream-2)", maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.8 }}>
-              Apply directly — the process begins with evidence, not introductions.
-            </p>
-          </Reveal>
-          <Reveal delay={0.24}>
-            <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+      <section id="cta-section">
+        <div className="w">
+          <div className="cta-inner">
+            <Fade delay={0}><div className="sec-label" style={{ marginBottom: 24 }}>Founders</div></Fade>
+            <Fade delay={0.08}><h2 className="cta-h2">Ready to build something <em>extraordinary?</em></h2></Fade>
+            <Fade delay={0.16}>
+              <p className="cta-sub">Join a curated network of founders who don't just raise capital. They build institutions. Selective by design. Transformative by intent.</p>
+            </Fade>
+            <Fade delay={0.24}>
+              <div className="cta-check">
+                <input
+                  type="checkbox"
+                  id="agree"
+                  checked={agreed}
+                  onChange={e => setAgreed(e.target.checked)}
+                />
+                <label htmlFor="agree">
+                  I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. All information is kept strictly confidential and used solely for investment evaluation.
+                </label>
+              </div>
+            </Fade>
+            <Fade delay={0.32}>
               <Unauthenticated>
                 <SignInButton mode="modal" forceRedirectUrl="/funding">
-                  <button className="btn-g">Apply for Capital <span className="arr" /></button>
+                  <button className="btn-primary">Apply Your Startup <span className="arr" /></button>
                 </SignInButton>
               </Unauthenticated>
               <Authenticated>
-                <Link href="/funding" className="btn-g">Apply for Capital <span className="arr" /></Link>
+                <Link href="/funding" className="btn-primary">Apply Your Startup <span className="arr" /></Link>
               </Authenticated>
-              <a href="mailto:partners@musedata.ai" className="btn-gh btn-gh-dark">Contact the Team <span className="arr" /></a>
-            </div>
-          </Reveal>
-          <Reveal delay={0.32}>
-            <p style={{ marginTop: 40, fontSize: 10, fontWeight: 400, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--cream-3)" }}>
-              Minority equity · Enterprise software &amp; AI · New York · Los Angeles · London · Investing Globally
-            </p>
-          </Reveal>
+            </Fade>
+            <Fade delay={0.4}>
+              <div className="cta-fine">
+                Reviewed within 14 business days <span>•</span> No obligation
+              </div>
+            </Fade>
+          </div>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* ── FOOTER (fixed slim) ── */}
       <footer>
-        <div className="wrap">
-          <div className="foot-top">
-            <div>
-              <div className="foot-wm">Muse<span>data</span></div>
-              <p className="foot-tag">Growth equity firm investing minority capital in enterprise software and AI companies.</p>
-              <p style={{ fontSize: 11, fontWeight: 300, color: "rgba(232,244,248,0.35)", letterSpacing: "0.12em", marginBottom: 22 }}>
-                New York &nbsp;·&nbsp; Los Angeles &nbsp;·&nbsp; London
-              </p>
-              <div className="foot-contact"><a href="mailto:partners@musedata.ai">partners@musedata.ai</a></div>
-            </div>
-            <div>
-              <div className="foot-ch">Firm</div>
-              <ul className="foot-list">
-                <li><a href="#philosophy">Philosophy</a></li>
-                <li><a href="#what">What We Do</a></li>
-                <li><a href="#paths">How We Partner</a></li>
-                <li><Link href="/sample-report">Evidence Pack</Link></li>
-              </ul>
-            </div>
-            <div>
-              <div className="foot-ch">Capital</div>
-              <ul className="foot-list">
-                <li><Link href="/funding">Apply for Capital</Link></li>
-                <li><Link href="/funding">Equity + Services</Link></li>
-                <li><Link href="/apply">Join the Firm</Link></li>
-                <li><a href="mailto:partners@musedata.ai">LP Enquiries</a></li>
-              </ul>
-            </div>
-            <div>
-              <div className="foot-ch">Intelligence</div>
-              <p style={{ fontSize: 12, fontWeight: 300, color: "rgba(232,244,248,0.5)", marginBottom: 14, lineHeight: 1.7 }}>
-                Perspectives on growth equity, enterprise software, and capital markets.
-              </p>
-              <div className="foot-nl">
-                <input type="email" placeholder="your@email.com" />
-                <button>Subscribe</button>
+        <div className="w">
+          <div className="footer-slim">
+            <a href="#" className="footer-logo">
+              <div className="footer-mark">
+                <img src={LOGO_B64} alt="MUSEDATA logo" />
               </div>
-            </div>
-          </div>
-          <div className="foot-bot">
-            <div className="foot-copy">© 2026 MUSEDATA. All rights reserved.</div>
-            <div className="foot-legal">
-              <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Disclosures</a>
+              <span className="footer-word">MUSEDATA</span>
+            </a>
+            <div className="footer-right">
+              <div className="footer-links-row">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Disclosures</a>
+                <a href="mailto:partners@musedata.ai">Contact</a>
+              </div>
+              <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
             </div>
           </div>
         </div>

@@ -1,32 +1,55 @@
 "use client";
-
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect, useRef } from "react";
 import Link from "next/link";
-import { FileUpload } from "../apply/components/ui/file-upload-component";
+import { FileUpload } from "../jobs/components/ui/file-upload-component";
 import {
-  User,
-  Mail,
-  Phone,
-  Building2,
-  Globe,
-  MapPin,
-  Briefcase,
-  Target,
-  TrendingUp,
-  Users,
-  DollarSign,
-  Lightbulb,
-  Code,
-  BarChart3,
-  Rocket,
-  CheckCircle,
-  AlertCircle,
-  FileText,
-  Linkedin,
+  User, Mail, Phone, Building2, Globe, MapPin, Briefcase, Target,
+  TrendingUp, Users, DollarSign, Lightbulb, Code, BarChart3, Rocket,
+  CheckCircle, AlertCircle, FileText, Linkedin, ArrowRight
 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { LOGO_B64 } from "@/components/UnifiedNavbar/UnifiedNavbar";
+
+/* ─── Fade/Reveal via IntersectionObserver ─── */
+function Fade({
+  children,
+  delay = 0,
+  style,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  style?: React.CSSProperties;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.08 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className={`fade ${className}`}
+      style={{ transitionDelay: `${delay}s`, ...style }}
+    >
+      {children}
+    </div>
+  );
+}
 
 interface StartupFormData {
   // Founder Information
@@ -35,7 +58,6 @@ interface StartupFormData {
   founderPhone: string;
   founderLinkedin: string;
   coFounders: string;
-
   // Company Information
   companyName: string;
   companyWebsite: string;
@@ -43,7 +65,6 @@ interface StartupFormData {
   incorporationStatus: "incorporated" | "in_progress" | "not_yet" | "";
   incorporationCountry: string;
   foundedDate: string;
-
   // Business Details
   industry: string;
   stage: "idea" | "prototype" | "mvp" | "early_revenue" | "growth" | "";
@@ -55,14 +76,12 @@ interface StartupFormData {
   marketSize: string;
   competitors: string;
   competitiveAdvantage: string;
-
   // Traction & Metrics
   currentRevenue: string;
   revenueGrowth: string;
   numberOfCustomers: string;
   userMetrics: string;
   keyMilestones: string;
-
   // Funding
   fundingStage: "pre_seed" | "seed" | "series_a" | "series_b" | "series_c_plus" | "";
   fundingAmount: string;
@@ -70,43 +89,36 @@ interface StartupFormData {
   currentInvestors: string;
   useOfFunds: string;
   valuation: string;
-
   // Team
   teamSize: string;
   keyTeamMembers: string;
   advisors: string;
   hiringPlans: string;
-
   // Product & Technology
   productDescription: string;
   technologyStack: string;
   intellectualProperty: string;
   productRoadmap: string;
-
   // Go-to-Market
   customerAcquisition: string;
   salesStrategy: string;
   marketingStrategy: string;
   partnershipStrategy: string;
-
   // Financial Projections
   projectedRevenue: string;
   burnRate: string;
   runway: string;
   breakEvenTimeline: string;
-
   // Documents
   pitchDeck: File | null;
   financialModel: File | null;
   businessPlan: File | null;
   productDemo: File | null;
-
   // Additional
   whyUs: string;
   referralSource: string;
   exitStrategy: string;
   challenges: string;
-
   terms: boolean;
 }
 
@@ -115,62 +127,20 @@ export default function StartupApplicationPage() {
   const generateUploadUrl = useMutation(api.startupApplications.generateUploadUrl);
 
   const [formData, setFormData] = useState<StartupFormData>({
-    founderName: "",
-    founderEmail: "",
-    founderPhone: "",
-    founderLinkedin: "",
-    coFounders: "",
-    companyName: "",
-    companyWebsite: "",
-    companyLocation: "",
-    incorporationStatus: "",
-    incorporationCountry: "",
-    foundedDate: "",
-    industry: "",
-    stage: "",
-    businessModel: "",
-    problemStatement: "",
-    solution: "",
-    uniqueValueProposition: "",
-    targetMarket: "",
-    marketSize: "",
-    competitors: "",
-    competitiveAdvantage: "",
-    currentRevenue: "",
-    revenueGrowth: "",
-    numberOfCustomers: "",
-    userMetrics: "",
-    keyMilestones: "",
-    fundingStage: "",
-    fundingAmount: "",
-    previousFunding: "",
-    currentInvestors: "",
-    useOfFunds: "",
-    valuation: "",
-    teamSize: "",
-    keyTeamMembers: "",
-    advisors: "",
-    hiringPlans: "",
-    productDescription: "",
-    technologyStack: "",
-    intellectualProperty: "",
-    productRoadmap: "",
-    customerAcquisition: "",
-    salesStrategy: "",
-    marketingStrategy: "",
-    partnershipStrategy: "",
-    projectedRevenue: "",
-    burnRate: "",
-    runway: "",
-    breakEvenTimeline: "",
-    pitchDeck: null,
-    financialModel: null,
-    businessPlan: null,
-    productDemo: null,
-    whyUs: "",
-    referralSource: "",
-    exitStrategy: "",
-    challenges: "",
+    founderName: "", founderEmail: "", founderPhone: "", founderLinkedin: "",
+    coFounders: "", companyName: "", companyWebsite: "", companyLocation: "",
+    incorporationStatus: "", incorporationCountry: "", foundedDate: "",
+    industry: "", stage: "", businessModel: "", problemStatement: "",
+    solution: "", uniqueValueProposition: "", targetMarket: "", marketSize: "",
+    competitors: "", competitiveAdvantage: "", currentRevenue: "", revenueGrowth: "",
+    numberOfCustomers: "", userMetrics: "", keyMilestones: "",
+    fundingStage: "", fundingAmount: "", previousFunding: "", currentInvestors: "",
+    useOfFunds: "", valuation: "", teamSize: "", keyTeamMembers: "", advisors: "",
+    hiringPlans: "", productDescription: "", technologyStack: "", intellectualProperty: "",
+    productRoadmap: "", customerAcquisition: "", salesStrategy: "", marketingStrategy: "",
+    partnershipStrategy: "", projectedRevenue: "", burnRate: "", runway: "",
+    breakEvenTimeline: "", pitchDeck: null, financialModel: null, businessPlan: null,
+    productDemo: null, whyUs: "", referralSource: "", exitStrategy: "", challenges: "",
     terms: false,
   });
 
@@ -179,11 +149,8 @@ export default function StartupApplicationPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [applicationId, setApplicationId] = useState<string>("");
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
@@ -192,71 +159,26 @@ export default function StartupApplicationPage() {
     }
   };
 
-  const handleFileChange = (
-    field: "pitchDeck" | "financialModel" | "businessPlan" | "productDemo",
-    file: File | null
-  ) => {
+  const handleFileChange = (field: "pitchDeck" | "financialModel" | "businessPlan" | "productDemo", file: File | null) => {
     setFormData((prev) => ({ ...prev, [field]: file }));
   };
 
   const resetForm = () => {
     setFormData({
-      founderName: "",
-      founderEmail: "",
-      founderPhone: "",
-      founderLinkedin: "",
-      coFounders: "",
-      companyName: "",
-      companyWebsite: "",
-      companyLocation: "",
-      incorporationStatus: "",
-      incorporationCountry: "",
-      foundedDate: "",
-      industry: "",
-      stage: "",
-      businessModel: "",
-      problemStatement: "",
-      solution: "",
-      uniqueValueProposition: "",
-      targetMarket: "",
-      marketSize: "",
-      competitors: "",
-      competitiveAdvantage: "",
-      currentRevenue: "",
-      revenueGrowth: "",
-      numberOfCustomers: "",
-      userMetrics: "",
-      keyMilestones: "",
-      fundingStage: "",
-      fundingAmount: "",
-      previousFunding: "",
-      currentInvestors: "",
-      useOfFunds: "",
-      valuation: "",
-      teamSize: "",
-      keyTeamMembers: "",
-      advisors: "",
-      hiringPlans: "",
-      productDescription: "",
-      technologyStack: "",
-      intellectualProperty: "",
-      productRoadmap: "",
-      customerAcquisition: "",
-      salesStrategy: "",
-      marketingStrategy: "",
-      partnershipStrategy: "",
-      projectedRevenue: "",
-      burnRate: "",
-      runway: "",
-      breakEvenTimeline: "",
-      pitchDeck: null,
-      financialModel: null,
-      businessPlan: null,
-      productDemo: null,
-      whyUs: "",
-      referralSource: "",
-      exitStrategy: "",
-      challenges: "",
+      founderName: "", founderEmail: "", founderPhone: "", founderLinkedin: "",
+      coFounders: "", companyName: "", companyWebsite: "", companyLocation: "",
+      incorporationStatus: "", incorporationCountry: "", foundedDate: "",
+      industry: "", stage: "", businessModel: "", problemStatement: "",
+      solution: "", uniqueValueProposition: "", targetMarket: "", marketSize: "",
+      competitors: "", competitiveAdvantage: "", currentRevenue: "", revenueGrowth: "",
+      numberOfCustomers: "", userMetrics: "", keyMilestones: "",
+      fundingStage: "", fundingAmount: "", previousFunding: "", currentInvestors: "",
+      useOfFunds: "", valuation: "", teamSize: "", keyTeamMembers: "", advisors: "",
+      hiringPlans: "", productDescription: "", technologyStack: "", intellectualProperty: "",
+      productRoadmap: "", customerAcquisition: "", salesStrategy: "", marketingStrategy: "",
+      partnershipStrategy: "", projectedRevenue: "", burnRate: "", runway: "",
+      breakEvenTimeline: "", pitchDeck: null, financialModel: null, businessPlan: null,
+      productDemo: null, whyUs: "", referralSource: "", exitStrategy: "", challenges: "",
       terms: false,
     });
   };
@@ -266,29 +188,18 @@ export default function StartupApplicationPage() {
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setErrorMessage("");
-
     try {
-      // Validate required fields
-      if (!formData.pitchDeck) {
-        throw new Error("Pitch deck is required");
-      }
+      if (!formData.pitchDeck) throw new Error("Pitch deck is required");
+      if (!formData.terms) throw new Error("You must accept the terms and conditions");
 
-      if (!formData.terms) {
-        throw new Error("You must accept the terms and conditions");
-      }
-
-      // Upload pitch deck (required)
+      // Upload pitch deck
       const pitchDeckUploadUrl = await generateUploadUrl();
       const pitchDeckResponse = await fetch(pitchDeckUploadUrl, {
         method: "POST",
         headers: { "Content-Type": formData.pitchDeck.type },
         body: formData.pitchDeck,
       });
-
-      if (!pitchDeckResponse.ok) {
-        throw new Error("Failed to upload pitch deck");
-      }
-
+      if (!pitchDeckResponse.ok) throw new Error("Failed to upload pitch deck");
       const { storageId: pitchDeckStorageId } = await pitchDeckResponse.json();
 
       // Upload optional documents
@@ -300,12 +211,8 @@ export default function StartupApplicationPage() {
           headers: { "Content-Type": formData.financialModel.type },
           body: formData.financialModel,
         });
-        if (response.ok) {
-          const result = await response.json();
-          financialModelStorageId = result.storageId;
-        }
+        if (response.ok) financialModelStorageId = (await response.json()).storageId;
       }
-
       let businessPlanStorageId: Id<"_storage"> | undefined;
       if (formData.businessPlan) {
         const url = await generateUploadUrl();
@@ -314,12 +221,8 @@ export default function StartupApplicationPage() {
           headers: { "Content-Type": formData.businessPlan.type },
           body: formData.businessPlan,
         });
-        if (response.ok) {
-          const result = await response.json();
-          businessPlanStorageId = result.storageId;
-        }
+        if (response.ok) businessPlanStorageId = (await response.json()).storageId;
       }
-
       let productDemoStorageId: Id<"_storage"> | undefined;
       if (formData.productDemo) {
         const url = await generateUploadUrl();
@@ -328,10 +231,7 @@ export default function StartupApplicationPage() {
           headers: { "Content-Type": formData.productDemo.type },
           body: formData.productDemo,
         });
-        if (response.ok) {
-          const result = await response.json();
-          productDemoStorageId = result.storageId;
-        }
+        if (response.ok) productDemoStorageId = (await response.json()).storageId;
       }
 
       // Submit application
@@ -402,1047 +302,741 @@ export default function StartupApplicationPage() {
     } catch (error: any) {
       console.error("Submission error:", error);
       setSubmitStatus("error");
-      setErrorMessage(
-        error.message || "There was an error submitting your application. Please try again."
-      );
+      setErrorMessage(error.message || "There was an error submitting your application. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 15px; }
+        :root {
+          --nav-bg: #f6f8f8; --nav-text: #b5c9ce; --nav-active: #1c3342; --nav-border: #dce4e8;
+          --hero-bg: #092e42; --hero-h1: #ffffff; --hero-body: rgba(255,255,255,0.55);
+          --hero-label: #5997b0; --hero-line: #5997b0; --section-bg: #f1f7fa;
+          --section-white: #ffffff; --card-border: #5e96aa; --label-color: #7a9daa;
+          --h2-color: #0d2b3a; --body-color: #3a5a6a; --bullet-color: #5997b0;
+          --list-text: #3a5464; --divider: #d4e4eb; --cta-bg: #092e42;
+          --cta-accent: #39a2ca; --cta-body: rgba(255,255,255,0.65);
+          --btn-bg: #39a2ca; --btn-text: #ffffff; --btn-fine: #4a6e7e;
+          --footer-bg: #092e42; --footer-text: rgba(255,255,255,0.55);
+          --footer-links: rgba(255,255,255,0.35); --input-bg: #f9fbfc;
+          --input-border: #c4d8e2; --input-focus: #39a2ca;
+          --ff: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        ::selection { background: rgba(57,162,202,0.2); }
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-thumb { background: var(--hero-label); }
+        body {
+          background: var(--section-white); color: var(--h2-color);
+          font-family: var(--ff); font-weight: 400; line-height: 1.65;
+          -webkit-font-smoothing: antialiased; overflow-x: hidden; padding-bottom: 64px;
+        }
+        @media(max-width:768px){ body { padding-bottom: 120px; } }
+        @media(max-width:480px){ body { padding-bottom: 140px; } }
+        .w { max-width: 1200px; margin: 0 auto; padding: 0 56px; }
+        @media(max-width:900px){ .w { padding: 0 32px; } }
+        @media(max-width:640px){ .w { padding: 0 20px; } }
+        .fade { opacity: 0; transform: translateY(22px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+        .fade.in { opacity: 1; transform: none; }
+        /* Header */
+        #apply-header {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+          background: var(--nav-bg); border-bottom: 1px solid var(--nav-border);
+          transition: box-shadow 0.3s;
+        }
+        #apply-header.scrolled { box-shadow: 0 2px 24px rgba(9,46,66,0.08); }
+        .header-inner {
+          display: flex; align-items: center; height: 82px;
+          max-width: 1200px; margin: 0 auto; padding: 0 48px;
+        }
+        @media(max-width:900px){ .header-inner { padding: 0 32px; } }
+        .header-logo {
+          display: flex; align-items: center; gap: 12px; text-decoration: none;
+          flex-shrink: 0; margin-right: 52px; line-height: 1;
+        }
+        .header-mark { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-mark img { width: 40px; height: 40px; object-fit: contain; display: block; }
+        .header-word { font-size: 0.933rem; font-weight: 700; letter-spacing: 0.22em; color: var(--nav-active); text-transform: uppercase; line-height: 1; white-space: nowrap; }
+        .header-tag {
+          font-size: 0.6rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+          color: var(--label-color); background: var(--section-bg); padding: 6px 14px; border-radius: 999px;
+        }
+        /* Hero */
+        #apply-hero {
+          min-height: 60vh; padding-top: 82px; background: var(--hero-bg);
+          display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;
+        }
+        .hero-bg-img {
+          position: absolute; inset: 0; background-image: url('/background.png');
+          background-size: cover; background-position: center; opacity: 0.08; pointer-events: none;
+        }
+        .hero-inner { padding: 96px 56px 108px; position: relative; z-index: 1; text-align: left; max-width: 720px; }
+        .hero-label-row { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; opacity: 0; animation: up 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s forwards; }
+        .hero-label-line { width: 32px; height: 1px; background: var(--hero-line); }
+        .hero-label-text { font-size: 0.667rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--hero-label); }
+        .hero-h1 {
+          font-family: var(--ff); font-size: clamp(2rem,3.8vw,3rem); font-weight: 300;
+          line-height: 1.2; letter-spacing: -0.01em; color: var(--hero-h1); text-align: left;
+          opacity: 0; animation: up 1s cubic-bezier(0.16,1,0.3,1) 0.22s forwards;
+        }
+        .hero-h1 .accent { color: var(--cta-accent); }
+        .hero-body {
+          margin-top: 2rem; max-width: 580px; font-size: 0.933rem; font-weight: 400;
+          line-height: 1.75; color: var(--hero-body); opacity: 0; animation: up 1s cubic-bezier(0.16,1,0.3,1) 0.38s forwards;
+        }
+        @keyframes up { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: none; } }
+        /* Form Sections */
+        .form-section {
+          padding: 72px 0; border-top: 1px solid var(--divider); background: var(--section-white);
+        }
+        .form-section.alt { background: var(--section-bg); }
+        .section-label {
+          display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+          font-size: 0.633rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--hero-label);
+        }
+        .section-label::before { content: ''; width: 28px; height: 1px; background: var(--hero-label); display: block; }
+        .section-title {
+          font-family: var(--ff); font-size: clamp(1.6rem,2.8vw,2.2rem); font-weight: 300;
+          line-height: 1.15; letter-spacing: -0.01em; color: var(--h2-color); margin-bottom: 32px;
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+        @media(max-width:768px){ .form-grid { grid-template-columns: 1fr; } }
+        .form-field { display: flex; flex-direction: column; }
+        .form-field.full { grid-column: 1 / -1; }
+        .form-label {
+          font-size: 0.733rem; font-weight: 500; color: var(--body-color); margin-bottom: 8px;
+          display: flex; align-items: center; gap: 6px;
+        }
+        .form-label .required { color: #c44; margin-left: 2px; }
+        .input-wrap { position: relative; }
+        .input-icon {
+          position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+          width: 18px; height: 18px; color: var(--label-color); pointer-events: none;
+        }
+        .form-input, .form-select, .form-textarea {
+          width: 100%; padding: 14px 16px; padding-left: 44px;
+          background: var(--input-bg); border: 1.5px solid var(--input-border);
+          border-radius: 10px; font-size: 0.867rem; color: var(--h2-color);
+          font-family: var(--ff); transition: border-color 0.2s, background 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+          outline: none; border-color: var(--input-focus); background: var(--section-white);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--label-color); }
+        .form-textarea { min-height: 110px; resize: vertical; padding-left: 16px; }
+        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%237a9daa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+        /* File Upload Styling */
+        .file-upload {
+          border: 2px dashed var(--input-border); border-radius: 12px; padding: 24px;
+          background: var(--section-white); transition: border-color 0.2s, background 0.2s;
+          cursor: pointer; display: flex; align-items: center; gap: 14px;
+        }
+        .file-upload:hover { border-color: var(--hero-label); background: var(--section-bg); }
+        .file-upload.has-file { border-style: solid; border-color: var(--hero-label); }
+        .file-icon {
+          width: 40px; height: 40px; border-radius: 10px; background: var(--section-bg);
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .file-icon svg { width: 20px; height: 20px; color: var(--hero-label); }
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-size: 0.8rem; font-weight: 500; color: var(--h2-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-meta { font-size: 0.667rem; color: var(--label-color); margin-top: 2px; }
+        .file-action { font-size: 0.667rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--hero-label); }
+        .file-upload input[type="file"] { display: none; }
+        /* Messages */
+        .msg-box {
+          border-radius: 14px; padding: 20px 24px; margin-bottom: 32px;
+          display: flex; align-items: flex-start; gap: 14px;
+        }
+        .msg-box.success { background: rgba(34,197,94,0.08); border: 1.5px solid rgba(34,197,94,0.3); }
+        .msg-box.error { background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.3); }
+        .msg-icon { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; }
+        .msg-icon.success { color: #22c55e; }
+        .msg-icon.error { color: #ef4444; }
+        .msg-title { font-size: 0.867rem; font-weight: 600; color: var(--h2-color); margin-bottom: 4px; }
+        .msg-text { font-size: 0.8rem; color: var(--body-color); line-height: 1.6; }
+        .msg-id { font-size: 0.7rem; color: var(--label-color); margin-top: 8px; font-family: monospace; }
+        /* Terms & Submit */
+        .terms-box {
+          background: var(--section-bg); border: 1.5px solid var(--input-border);
+          border-radius: 12px; padding: 18px 20px; margin-bottom: 32px;
+        }
+        .terms-check { display: flex; align-items: flex-start; gap: 12px; }
+        .terms-check input[type="checkbox"] {
+          width: 18px; height: 18px; margin-top: 2px; accent-color: var(--btn-bg); cursor: pointer;
+        }
+        .terms-label { font-size: 0.733rem; color: var(--body-color); line-height: 1.6; }
+        .terms-label a { color: var(--hero-label); text-decoration: none; }
+        .terms-label a:hover { text-decoration: underline; }
+        .btn-submit {
+          width: 100%; padding: 18px 32px; background: var(--btn-bg); color: var(--btn-text);
+          font-size: 0.733rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+          border: none; border-radius: 12px; cursor: pointer; transition: background 0.25s, transform 0.15s;
+          display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .btn-submit:hover { background: #2b8fb5; transform: translateY(-1px); }
+        .btn-submit:disabled { background: var(--label-color); cursor: not-allowed; transform: none; }
+        .btn-submit .spinner {
+          width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .submit-note { text-align: center; font-size: 0.7rem; color: var(--label-color); margin-top: 16px; }
+         /* ── FOOTER (fixed slim) ── */
+        footer {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+          background: var(--footer-bg);
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+        .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
+        .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
+        .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
+        .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
+
+        .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
+        .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
+        /* Responsive */
+        @media(max-width:768px){
+          .hero-inner { padding: 56px 24px 72px; }
+          .hero-h1 { font-size: clamp(1.7rem,5vw,2.4rem); }
+          .hero-body { font-size: 0.867rem; margin-top: 1.5rem; }
+          .form-section { padding: 48px 0; }
+          .section-title { font-size: 1.6rem; margin-bottom: 24px; }
+          .footer-slim { flex-wrap: wrap; gap: 14px; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 10px; }
+          .footer-links-row { flex-wrap: wrap; gap: 14px; }
+        }
+        @media(max-width:480px){
+          .hero-inner { padding: 44px 18px 56px; }
+          .form-section { padding: 36px 0; }
+          .section-title { font-size: 1.4rem; }
+          .form-input, .form-select { padding: 12px 14px; padding-left: 40px; font-size: 0.833rem; }
+          .form-textarea { padding-left: 14px; min-height: 100px; }
+          .file-upload { padding: 18px 16px; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+        }
+      `}</style>
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-8">
-            <div className="text-2xl font-bold text-[#1C4E64] tracking-tight">MUSEDATA</div>
-            <div className="hidden md:block text-xs text-gray-500 font-medium tracking-wider uppercase px-3 py-1 bg-gray-100 rounded-full">
-              Growth Equity
+      <header id="apply-header">
+        <div className="header-inner">
+          <a href="/" className="header-logo">
+            <div className="header-mark">
+              <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABAAEADASIAAhEBAxEB/8QAGgABAQEBAQEBAAAAAAAAAAAACAcGCQUAAv/EAD4QAAAEBAIFBwoEBwAAAAAAAAECAwQABQYRBwgSITFW0hQXQWGRlLIWGCIyNTZVc3bRQlGV0wkjN3F0gZL/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQABf/EACQRAAICAgIBAwUAAAAAAAAAAAECAAMEERJBEwUhYRQxccHw/9oADAMBAAIRAxEAPwCx5pa7qeh5fIVaamBWZ3aqxVhMgmppAUCCHrgNto7IhHP/AIqbxJdwb8EVHPD7Jpb57nwpwXY6uLUjVAkTh5t1i3EKxERWDGL1f1HP5q1m85TcIt5K7dJFBoiSypCgJRuUoXt+WyI75y2Mm9CP6a2/bjTZc/eqe/Tj7wBB5gbK0DkajabXNYJJ7lg85bGTehH9NbftxYsZ8Xq/pyfyprKJym3RcSVo6VKLRE91TlETDcxRtf8ALZA9hDZjPeqRfTjHwDGrrQuBqa61xUSCep++f/FTeJLuDfgi75Wq7qeuJfPlalmBXh2iqJURKgmnogYDiPqAF9gbYG8KLI97Jqn57bwqQWVUi1EgRWFdY1wDMTNNmlQodeXyEK1fTpqmCq3JhlqZDiYbE0tLS/1a3XEI5BgP8drjuyH2io54fZNLfPc+FOC7GxU3UDszZtnG4jiDEXgqywmLUM0CnZtVKzk0mdFWB2ikUoIiUNMQ0Q9YA2dES/ySy/bx173dvwx62Wv3ynP0898IRLoPwhnOyeoH1BWtdAd/qbvySy/bx173dvwxRMdlcHW1TytGp5tViLsslaAiDJukYgoaI6AiJvxCF79EQCNZm4/qHJvpth4TQuyvgw0TG02+VWDAdT0+WZevjted0Q+0IDKYtQKsuqAaEfTx0kCyHKhmaRCCUbH0dHR2htvfqgEQwP4evsWsP8lr4VITcW4HZlOOqCwaUTb5tKRqSrJdT6dOyleYnbLLmWBIQ9ADAS17iG2wwfeZzE3c9/2k4ot+dKYP5fK6ZFg+ctBOu4A4oqmJpWKna9h1wZ/KOofj0072p94fi8/ENakmaa/MeQO/74lqwIw2rmRVRNHU3px20RVkrtumc4lsZQxQ0S6h2jE+5nMTdz3/AGk4o0eXSdTh1V03I6mz9chZA8OUqjg5gAwFCwhcdvXEz8o6h+PTTvan3hiizmfcdRLGrxr7Hvv8fE1PM5ibue/7ScUaPMnhViFUlbSt7I6Wevm6UiZt1FExJYqhCjpF1jtC8TPyjqH49NO9qfeGdiTiZL8LcFGVWzNE71YWrdBo2A+iZy4OncCiYb2CwGMI69RR2jqhGUzpomVYKVvyA31BbzE4ubjTL/pPihNZKqIqui5VUyVUyRxKzul25kAWEvpgUqlxCwjsuHbEPkedOv0qhI4nMgkLqUmU/mNWyaiSpSX/AAKCc3pf3AQHqhx0pPJdU1NS2oZSqKrCYtiOW5hCw6BygIAIdAhewh0DeI3uLDRnRShUOxIJnh9k0t89z4U4LsdFKtpGm6sTbp1FKUJiRsJjIgqI+gJrXtYQ22CM9zOYZbnsO0/FFNGUtaBSJFk4L22FwRC7lr98pz9PPfCES6Ogkhw2oaROlXUopxo0WVQOgocgmuZM2oxdY7BjzuZzDLc9h2n4oMZiBidQG9OsKBdj23AZC2zJYazbEzLxKJfICgrNpaRs/bNxMBeUaKIkMmAjqARKcRC/SUA1Xje8zmGW57DtPxRuWyCTZsk2QICaSRAImUNhSgFgDshGTkLaBoSnDxWoJLH7zlBI8JsSpzUJJCzoifA+FTQOVdkokVLXtOc4AUgdYiAR07wmpUaIw1p+kzLg4UljIiKqpfVOpa5xC/RpCNuq0aiPokl0/9k=" alt="MUSEDATA" />
             </div>
-          </div>
-          <nav className="flex gap-8">
-            
-          </nav>
+            <span className="header-word">MUSEDATA</span>
+          </a>
+          <span className="header-tag">Startup Applications</span>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#1C4E64] to-[#0f2942] text-white py-16 md:py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium mb-6">
-            🚀 Apply for Funding
+      {/* Hero */}
+      <section id="apply-hero">
+        <div className="hero-bg-img" />
+        <div className="w">
+          <div className="hero-inner">
+            <Fade delay={0}>
+              <div className="hero-label-row">
+                <div className="hero-label-line" />
+                <span className="hero-label-text">Apply for Funding</span>
+              </div>
+            </Fade>
+            <Fade delay={0.12}>
+              <h1 className="hero-h1">
+                Partner with <span className="accent">MUSEDATA</span>
+              </h1>
+            </Fade>
+            <Fade delay={0.24}>
+              <p className="hero-body">
+                We back exceptional founders building the next generation of transformative enterprise software and AI companies. Tell us about your vision.
+              </p>
+            </Fade>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-            Partner with MUSEDATA
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-            We back exceptional founders building the next generation of transformative companies.
-            Tell us about your vision.
-          </p>
         </div>
-      </div>
+      </section>
 
-      {/* Main Container */}
-      <div className="max-w-5xl mx-auto px-6 -mt-12 pb-20">
+      {/* Main Form */}
+      <main className="w" style={{ paddingTop: 48, paddingBottom: 80 }}>
         {/* Success Message */}
         {submitStatus === "success" && (
-          <div className="mb-8 bg-green-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+          <Fade delay={0}>
+            <div className="msg-box success">
+              <CheckCircle className="msg-icon success" />
               <div>
-                <h3 className="text-lg font-bold text-green-900 mb-2">Application Submitted Successfully!</h3>
-                <p className="text-green-700 mb-3">
-                  Thank you for your application. Our investment team will review your submission and reach out
-                  within 2 weeks.
+                <div className="msg-title">Application Submitted Successfully!</div>
+                <p className="msg-text">
+                  Thank you for your application. Our investment team will review your submission and reach out within 2 weeks.
                 </p>
-                <p className="text-sm text-green-600">
-                  Application ID: <span className="font-mono font-semibold">{applicationId}</span>
-                </p>
+                <div className="msg-id">Application ID: {applicationId}</div>
               </div>
             </div>
-          </div>
+          </Fade>
         )}
 
         {/* Error Message */}
         {submitStatus === "error" && (
-          <div className="mb-8 bg-red-50 border-2 border-red-200 rounded-2xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+          <Fade delay={0}>
+            <div className="msg-box error">
+              <AlertCircle className="msg-icon error" />
               <div>
-                <h3 className="text-lg font-bold text-red-900 mb-2">Submission Error</h3>
-                <p className="text-red-700">{errorMessage}</p>
+                <div className="msg-title">Submission Error</div>
+                <p className="msg-text">{errorMessage}</p>
               </div>
             </div>
-          </div>
+          </Fade>
         )}
 
-        {/* Form Container */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          <form onSubmit={handleSubmit}>
-            {/* Founder Information */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#1C4E64] rounded-lg flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Founder Information</h2>
+        <form onSubmit={handleSubmit}>
+          {/* Founder Information */}
+          <Fade delay={0.1} className="form-section">
+            <div className="section-label">01</div>
+            <h2 className="section-title">Founder Information</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">
+                  <User className="input-icon" style={{ left: 14 }} />
+                  Founder Name <span className="required">*</span>
+                </label>
+                <input type="text" name="founderName" value={formData.founderName} onChange={handleInputChange} required placeholder="Jane Doe" className="form-input" />
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Founder Name <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="founderName"
-                      value={formData.founderName}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="John Doe"
-                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="email"
-                      name="founderEmail"
-                      value={formData.founderEmail}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="john@startup.com"
-                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                  <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="founderPhone"
-                      value={formData.founderPhone}
-                      onChange={handleInputChange}
-                      placeholder="+1 (555) 000-0000"
-                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile</label>
-                  <div className="relative">
-                    <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="url"
-                      name="founderLinkedin"
-                      value={formData.founderLinkedin}
-                      onChange={handleInputChange}
-                      placeholder="https://linkedin.com/in/yourprofile"
-                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Co-Founders (if applicable)
-                  </label>
-                  <textarea
-                    name="coFounders"
-                    value={formData.coFounders}
-                    onChange={handleInputChange}
-                    placeholder="List co-founder names, roles, and backgrounds..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">
+                  <Mail className="input-icon" style={{ left: 14 }} />
+                  Email <span className="required">*</span>
+                </label>
+                <input type="email" name="founderEmail" value={formData.founderEmail} onChange={handleInputChange} required placeholder="jane@startup.com" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">
+                  <Phone className="input-icon" style={{ left: 14 }} />
+                  Phone
+                </label>
+                <input type="tel" name="founderPhone" value={formData.founderPhone} onChange={handleInputChange} placeholder="+1 (555) 000-0000" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">
+                  <Linkedin className="input-icon" style={{ left: 14 }} />
+                  LinkedIn Profile
+                </label>
+                <input type="url" name="founderLinkedin" value={formData.founderLinkedin} onChange={handleInputChange} placeholder="https://linkedin.com/in/profile" className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Co-Founders (if applicable)</label>
+                <textarea name="coFounders" value={formData.coFounders} onChange={handleInputChange} placeholder="List co-founder names, roles, and backgrounds..." className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Company Information */}
-            <div className="p-8 md:p-12 bg-gray-50 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#2D5F73] rounded-lg flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Company Information</h2>
+          {/* Company Information */}
+          <Fade delay={0.15} className="form-section alt">
+            <div className="section-label">02</div>
+            <h2 className="section-title">Company Information</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">
+                  <Building2 className="input-icon" style={{ left: 14 }} />
+                  Company Name <span className="required">*</span>
+                </label>
+                <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} required placeholder="Startup Inc." className="form-input" />
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Company Name <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Startup Inc."
-                      className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Website</label>
-                  <div className="relative">
-                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="url"
-                      name="companyWebsite"
-                      value={formData.companyWebsite}
-                      onChange={handleInputChange}
-                      placeholder="https://startup.com"
-                      className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Location <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="companyLocation"
-                      value={formData.companyLocation}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="San Francisco, CA"
-                      className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Incorporation Status <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="incorporationStatus"
-                    value={formData.incorporationStatus}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-[#1C4E64] transition-all cursor-pointer"
-                  >
-                    <option value="">Select status</option>
-                    <option value="incorporated">Incorporated</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="not_yet">Not Yet Incorporated</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Incorporation Country
-                  </label>
-                  <input
-                    type="text"
-                    name="incorporationCountry"
-                    value={formData.incorporationCountry}
-                    onChange={handleInputChange}
-                    placeholder="United States"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Founded Date</label>
-                  <input
-                    type="text"
-                    name="foundedDate"
-                    value={formData.foundedDate}
-                    onChange={handleInputChange}
-                    placeholder="January 2024"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">
+                  <Globe className="input-icon" style={{ left: 14 }} />
+                  Website
+                </label>
+                <input type="url" name="companyWebsite" value={formData.companyWebsite} onChange={handleInputChange} placeholder="https://startup.com" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">
+                  <MapPin className="input-icon" style={{ left: 14 }} />
+                  Location <span className="required">*</span>
+                </label>
+                <input type="text" name="companyLocation" value={formData.companyLocation} onChange={handleInputChange} required placeholder="San Francisco, CA" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Incorporation Status <span className="required">*</span></label>
+                <select name="incorporationStatus" value={formData.incorporationStatus} onChange={handleInputChange} required className="form-select">
+                  <option value="">Select status</option>
+                  <option value="incorporated">Incorporated</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="not_yet">Not Yet Incorporated</option>
+                </select>
+              </div>
+              <div className="form-field">
+                <label className="form-label">Incorporation Country</label>
+                <input type="text" name="incorporationCountry" value={formData.incorporationCountry} onChange={handleInputChange} placeholder="United States" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Founded Date</label>
+                <input type="text" name="foundedDate" value={formData.foundedDate} onChange={handleInputChange} placeholder="January 2024" className="form-input" />
               </div>
             </div>
+          </Fade>
 
-            {/* Business Details */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#3A7A94] rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Business Details</h2>
+          {/* Business Details */}
+          <Fade delay={0.2} className="form-section">
+            <div className="section-label">03</div>
+            <h2 className="section-title">Business Details</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">Industry <span className="required">*</span></label>
+                <select name="industry" value={formData.industry} onChange={handleInputChange} required className="form-select">
+                  <option value="">Select industry</option>
+                  <option value="FinTech">FinTech</option>
+                  <option value="HealthTech">HealthTech</option>
+                  <option value="SaaS">SaaS</option>
+                  <option value="E-commerce">E-commerce</option>
+                  <option value="AI/ML">AI/ML</option>
+                  <option value="Blockchain">Blockchain</option>
+                  <option value="EdTech">EdTech</option>
+                  <option value="CleanTech">CleanTech</option>
+                  <option value="PropTech">PropTech</option>
+                  <option value="Marketplace">Marketplace</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
-
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Industry <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="industry"
-                      value={formData.industry}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all cursor-pointer"
-                    >
-                      <option value="">Select industry</option>
-                      <option value="FinTech">FinTech</option>
-                      <option value="HealthTech">HealthTech</option>
-                      <option value="SaaS">SaaS</option>
-                      <option value="E-commerce">E-commerce</option>
-                      <option value="AI/ML">AI/ML</option>
-                      <option value="Blockchain">Blockchain</option>
-                      <option value="EdTech">EdTech</option>
-                      <option value="CleanTech">CleanTech</option>
-                      <option value="PropTech">PropTech</option>
-                      <option value="Marketplace">Marketplace</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Current Stage <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="stage"
-                      value={formData.stage}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all cursor-pointer"
-                    >
-                      <option value="">Select stage</option>
-                      <option value="idea">Idea</option>
-                      <option value="prototype">Prototype</option>
-                      <option value="mvp">MVP</option>
-                      <option value="early_revenue">Early Revenue</option>
-                      <option value="growth">Growth</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Business Model <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="businessModel"
-                    value={formData.businessModel}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Describe how your company makes money (e.g., subscription, marketplace fees, licensing)..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4" />
-                    Problem Statement <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="problemStatement"
-                    value={formData.problemStatement}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="What problem are you solving? Why does it matter?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Your Solution <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="solution"
-                    value={formData.solution}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="How does your product/service solve this problem?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Unique Value Proposition <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="uniqueValueProposition"
-                    value={formData.uniqueValueProposition}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="What makes you different from competitors? What's your unfair advantage?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Target Market <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="targetMarket"
-                    value={formData.targetMarket}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Who are your customers? Demographics, psychographics, use cases..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Market Size (TAM/SAM/SOM)</label>
-                  <input
-                    type="text"
-                    name="marketSize"
-                    value={formData.marketSize}
-                    onChange={handleInputChange}
-                    placeholder="TAM: $10B, SAM: $2B, SOM: $200M"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Competitors</label>
-                  <textarea
-                    name="competitors"
-                    value={formData.competitors}
-                    onChange={handleInputChange}
-                    placeholder="Who are your main competitors? What's the competitive landscape?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Competitive Advantage / Moat</label>
-                  <textarea
-                    name="competitiveAdvantage"
-                    value={formData.competitiveAdvantage}
-                    onChange={handleInputChange}
-                    placeholder="What's your defensibility? Network effects, proprietary data, patents, switching costs?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">Current Stage <span className="required">*</span></label>
+                <select name="stage" value={formData.stage} onChange={handleInputChange} required className="form-select">
+                  <option value="">Select stage</option>
+                  <option value="idea">Idea</option>
+                  <option value="prototype">Prototype</option>
+                  <option value="mvp">MVP</option>
+                  <option value="early_revenue">Early Revenue</option>
+                  <option value="growth">Growth</option>
+                </select>
+              </div>
+              <div className="form-field full">
+                <label className="form-label">
+                  <Lightbulb style={{ width: 16, height: 16 }} />
+                  Problem Statement <span className="required">*</span>
+                </label>
+                <textarea name="problemStatement" value={formData.problemStatement} onChange={handleInputChange} required placeholder="What problem are you solving? Why does it matter?" className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Your Solution <span className="required">*</span></label>
+                <textarea name="solution" value={formData.solution} onChange={handleInputChange} required placeholder="How does your product/service solve this problem?" className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Unique Value Proposition <span className="required">*</span></label>
+                <textarea name="uniqueValueProposition" value={formData.uniqueValueProposition} onChange={handleInputChange} required placeholder="What makes you different from competitors?" className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Target Market <span className="required">*</span></label>
+                <textarea name="targetMarket" value={formData.targetMarket} onChange={handleInputChange} required placeholder="Who are your customers? Demographics, psychographics, use cases..." className="form-textarea" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Market Size (TAM/SAM/SOM)</label>
+                <input type="text" name="marketSize" value={formData.marketSize} onChange={handleInputChange} placeholder="TAM: $10B, SAM: $2B" className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Competitive Advantage / Moat</label>
+                <textarea name="competitiveAdvantage" value={formData.competitiveAdvantage} onChange={handleInputChange} placeholder="Network effects, proprietary data, patents, switching costs?" className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Traction & Metrics */}
-            <div className="p-8 md:p-12 bg-gray-50 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#245167] rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Traction & Metrics</h2>
+          {/* Traction & Metrics */}
+          <Fade delay={0.25} className="form-section alt">
+            <div className="section-label">04</div>
+            <h2 className="section-title">Traction & Metrics</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">Current Revenue (MRR/ARR)</label>
+                <input type="text" name="currentRevenue" value={formData.currentRevenue} onChange={handleInputChange} placeholder="$50K MRR" className="form-input" />
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Current Revenue (MRR/ARR)</label>
-                  <input
-                    type="text"
-                    name="currentRevenue"
-                    value={formData.currentRevenue}
-                    onChange={handleInputChange}
-                    placeholder="$50K MRR / $600K ARR"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Revenue Growth</label>
-                  <input
-                    type="text"
-                    name="revenueGrowth"
-                    value={formData.revenueGrowth}
-                    onChange={handleInputChange}
-                    placeholder="20% MoM or 300% YoY"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Number of Customers</label>
-                  <input
-                    type="text"
-                    name="numberOfCustomers"
-                    value={formData.numberOfCustomers}
-                    onChange={handleInputChange}
-                    placeholder="500 paying customers"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">User Metrics</label>
-                  <input
-                    type="text"
-                    name="userMetrics"
-                    value={formData.userMetrics}
-                    onChange={handleInputChange}
-                    placeholder="10K MAU, 70% retention, 5 sessions/week"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Key Milestones & Achievements <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="keyMilestones"
-                    value={formData.keyMilestones}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="What have you achieved so far? Product launches, partnerships, awards, key hires..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">Revenue Growth</label>
+                <input type="text" name="revenueGrowth" value={formData.revenueGrowth} onChange={handleInputChange} placeholder="20% MoM" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Number of Customers</label>
+                <input type="text" name="numberOfCustomers" value={formData.numberOfCustomers} onChange={handleInputChange} placeholder="500 paying customers" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">User Metrics</label>
+                <input type="text" name="userMetrics" value={formData.userMetrics} onChange={handleInputChange} placeholder="10K MAU, 70% retention" className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Key Milestones & Achievements <span className="required">*</span></label>
+                <textarea name="keyMilestones" value={formData.keyMilestones} onChange={handleInputChange} required placeholder="Product launches, partnerships, awards, key hires..." className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Funding */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#1C4E64] rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Funding</h2>
+          {/* Funding */}
+          <Fade delay={0.3} className="form-section">
+            <div className="section-label">05</div>
+            <h2 className="section-title">Funding</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">Funding Stage <span className="required">*</span></label>
+                <select name="fundingStage" value={formData.fundingStage} onChange={handleInputChange} required className="form-select">
+                  <option value="">Select funding stage</option>
+                  <option value="pre_seed">Pre-Seed</option>
+                  <option value="seed">Seed</option>
+                  <option value="series_a">Series A</option>
+                  <option value="series_b">Series B</option>
+                  <option value="series_c_plus">Series C+</option>
+                </select>
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Funding Stage <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="fundingStage"
-                    value={formData.fundingStage}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all cursor-pointer"
-                  >
-                    <option value="">Select funding stage</option>
-                    <option value="pre_seed">Pre-Seed</option>
-                    <option value="seed">Seed</option>
-                    <option value="series_a">Series A</option>
-                    <option value="series_b">Series B</option>
-                    <option value="series_c_plus">Series C+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Funding Amount Seeking <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="fundingAmount"
-                    value={formData.fundingAmount}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="$2M - $5M"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Previous Funding Raised</label>
-                  <input
-                    type="text"
-                    name="previousFunding"
-                    value={formData.previousFunding}
-                    onChange={handleInputChange}
-                    placeholder="$500K pre-seed from angels"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Current Investors</label>
-                  <input
-                    type="text"
-                    name="currentInvestors"
-                    value={formData.currentInvestors}
-                    onChange={handleInputChange}
-                    placeholder="Y Combinator, angel investors"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Use of Funds <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="useOfFunds"
-                    value={formData.useOfFunds}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="How will you use the investment? (hiring, marketing, product development, etc.)"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Current/Target Valuation</label>
-                  <input
-                    type="text"
-                    name="valuation"
-                    value={formData.valuation}
-                    onChange={handleInputChange}
-                    placeholder="$15M post-money"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">Funding Amount Seeking <span className="required">*</span></label>
+                <input type="text" name="fundingAmount" value={formData.fundingAmount} onChange={handleInputChange} required placeholder="$2M - $5M" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Previous Funding Raised</label>
+                <input type="text" name="previousFunding" value={formData.previousFunding} onChange={handleInputChange} placeholder="$500K pre-seed" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Current Investors</label>
+                <input type="text" name="currentInvestors" value={formData.currentInvestors} onChange={handleInputChange} placeholder="Y Combinator, angels" className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Use of Funds <span className="required">*</span></label>
+                <textarea name="useOfFunds" value={formData.useOfFunds} onChange={handleInputChange} required placeholder="Hiring, marketing, product development..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Current/Target Valuation</label>
+                <input type="text" name="valuation" value={formData.valuation} onChange={handleInputChange} placeholder="$15M post-money" className="form-input" />
               </div>
             </div>
+          </Fade>
 
-            {/* Team */}
-            <div className="p-8 md:p-12 bg-gray-50 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#2D5F73] rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Team</h2>
+          {/* Team */}
+          <Fade delay={0.35} className="form-section alt">
+            <div className="section-label">06</div>
+            <h2 className="section-title">Team</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">Team Size <span className="required">*</span></label>
+                <input type="text" name="teamSize" value={formData.teamSize} onChange={handleInputChange} required placeholder="5 full-time" className="form-input" />
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Team Size <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="teamSize"
-                    value={formData.teamSize}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="5 full-time, 2 contractors"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Key Team Members <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="keyTeamMembers"
-                    value={formData.keyTeamMembers}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="List key team members, their roles, and relevant backgrounds..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Advisors</label>
-                  <textarea
-                    name="advisors"
-                    value={formData.advisors}
-                    onChange={handleInputChange}
-                    placeholder="List any advisors and their expertise..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Hiring Plans</label>
-                  <textarea
-                    name="hiringPlans"
-                    value={formData.hiringPlans}
-                    onChange={handleInputChange}
-                    placeholder="What are your key hiring needs over the next 12-18 months?"
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
+              <div className="form-field full">
+                <label className="form-label">Key Team Members <span className="required">*</span></label>
+                <textarea name="keyTeamMembers" value={formData.keyTeamMembers} onChange={handleInputChange} required placeholder="List key team members, roles, backgrounds..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Advisors</label>
+                <textarea name="advisors" value={formData.advisors} onChange={handleInputChange} placeholder="List advisors and their expertise..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Hiring Plans</label>
+                <textarea name="hiringPlans" value={formData.hiringPlans} onChange={handleInputChange} placeholder="Key hiring needs over next 12-18 months..." className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Product & Technology */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#3A7A94] rounded-lg flex items-center justify-center">
-                  <Code className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Product & Technology</h2>
+          {/* Product & Technology */}
+          <Fade delay={0.4} className="form-section">
+            <div className="section-label">07</div>
+            <h2 className="section-title">Product & Technology</h2>
+            <div className="form-grid">
+              <div className="form-field full">
+                <label className="form-label">
+                  <Code style={{ width: 16, height: 16 }} />
+                  Product Description <span className="required">*</span>
+                </label>
+                <textarea name="productDescription" value={formData.productDescription} onChange={handleInputChange} required placeholder="Describe your product, features, how it works..." className="form-textarea" />
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Product Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="productDescription"
-                    value={formData.productDescription}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Describe your product, its features, and how it works..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Technology Stack</label>
-                  <input
-                    type="text"
-                    name="technologyStack"
-                    value={formData.technologyStack}
-                    onChange={handleInputChange}
-                    placeholder="React, Node.js, PostgreSQL, AWS..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Intellectual Property</label>
-                  <textarea
-                    name="intellectualProperty"
-                    value={formData.intellectualProperty}
-                    onChange={handleInputChange}
-                    placeholder="Patents, proprietary technology, trade secrets..."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Product Roadmap</label>
-                  <textarea
-                    name="productRoadmap"
-                    value={formData.productRoadmap}
-                    onChange={handleInputChange}
-                    placeholder="What's planned for the next 12-24 months?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">Technology Stack</label>
+                <input type="text" name="technologyStack" value={formData.technologyStack} onChange={handleInputChange} placeholder="React, Node.js, PostgreSQL, AWS" className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Intellectual Property</label>
+                <textarea name="intellectualProperty" value={formData.intellectualProperty} onChange={handleInputChange} placeholder="Patents, proprietary technology, trade secrets..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Product Roadmap</label>
+                <textarea name="productRoadmap" value={formData.productRoadmap} onChange={handleInputChange} placeholder="What's planned for next 12-24 months?" className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Go-to-Market */}
-            <div className="p-8 md:p-12 bg-gray-50 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#245167] rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Go-to-Market Strategy</h2>
+          {/* Go-to-Market */}
+          <Fade delay={0.45} className="form-section alt">
+            <div className="section-label">08</div>
+            <h2 className="section-title">Go-to-Market Strategy</h2>
+            <div className="form-grid">
+              <div className="form-field full">
+                <label className="form-label">
+                  <BarChart3 style={{ width: 16, height: 16 }} />
+                  Customer Acquisition <span className="required">*</span>
+                </label>
+                <textarea name="customerAcquisition" value={formData.customerAcquisition} onChange={handleInputChange} required placeholder="How do you acquire customers? CAC, channels..." className="form-textarea" />
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Customer Acquisition <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="customerAcquisition"
-                    value={formData.customerAcquisition}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="How do you acquire customers? CAC, channels, conversion rates..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Sales Strategy <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="salesStrategy"
-                    value={formData.salesStrategy}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Direct sales, self-serve, enterprise, partner-led..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Marketing Strategy</label>
-                  <textarea
-                    name="marketingStrategy"
-                    value={formData.marketingStrategy}
-                    onChange={handleInputChange}
-                    placeholder="Content, paid ads, SEO, PR, events, influencers..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Partnership Strategy</label>
-                  <textarea
-                    name="partnershipStrategy"
-                    value={formData.partnershipStrategy}
-                    onChange={handleInputChange}
-                    placeholder="Strategic partnerships, distribution channels, integrations..."
-                    className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] transition-all"
-                  />
-                </div>
+              <div className="form-field full">
+                <label className="form-label">Sales Strategy <span className="required">*</span></label>
+                <textarea name="salesStrategy" value={formData.salesStrategy} onChange={handleInputChange} required placeholder="Direct sales, self-serve, enterprise, partner-led..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Marketing Strategy</label>
+                <textarea name="marketingStrategy" value={formData.marketingStrategy} onChange={handleInputChange} placeholder="Content, paid ads, SEO, PR, events..." className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Partnership Strategy</label>
+                <textarea name="partnershipStrategy" value={formData.partnershipStrategy} onChange={handleInputChange} placeholder="Strategic partnerships, distribution channels..." className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Financial Projections */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#1C4E64] rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Financial Projections</h2>
+          {/* Financial Projections */}
+          <Fade delay={0.5} className="form-section">
+            <div className="section-label">09</div>
+            <h2 className="section-title">Financial Projections</h2>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">Projected Revenue (3 years)</label>
+                <input type="text" name="projectedRevenue" value={formData.projectedRevenue} onChange={handleInputChange} placeholder="Y1: $1M, Y2: $5M" className="form-input" />
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Projected Revenue (3 years)</label>
-                  <input
-                    type="text"
-                    name="projectedRevenue"
-                    value={formData.projectedRevenue}
-                    onChange={handleInputChange}
-                    placeholder="Y1: $1M, Y2: $5M, Y3: $15M"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Monthly Burn Rate</label>
-                  <input
-                    type="text"
-                    name="burnRate"
-                    value={formData.burnRate}
-                    onChange={handleInputChange}
-                    placeholder="$80K/month"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Current Runway</label>
-                  <input
-                    type="text"
-                    name="runway"
-                    value={formData.runway}
-                    onChange={handleInputChange}
-                    placeholder="18 months"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Break-Even Timeline</label>
-                  <input
-                    type="text"
-                    name="breakEvenTimeline"
-                    value={formData.breakEvenTimeline}
-                    onChange={handleInputChange}
-                    placeholder="Q3 2026"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">Monthly Burn Rate</label>
+                <input type="text" name="burnRate" value={formData.burnRate} onChange={handleInputChange} placeholder="$80K/month" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Current Runway</label>
+                <input type="text" name="runway" value={formData.runway} onChange={handleInputChange} placeholder="18 months" className="form-input" />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Break-Even Timeline</label>
+                <input type="text" name="breakEvenTimeline" value={formData.breakEvenTimeline} onChange={handleInputChange} placeholder="Q3 2026" className="form-input" />
               </div>
             </div>
+          </Fade>
 
-            {/* Documents */}
-            <div className="p-8 md:p-12 bg-gray-50 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#2D5F73] rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Documents</h2>
-              </div>
-
-              <div className="space-y-6">
+          {/* Documents */}
+          <Fade delay={0.55} className="form-section alt">
+            <div className="section-label">10</div>
+            <h2 className="section-title">Documents</h2>
+            <div className="form-grid">
+              <div className="form-field full">
+                <label className="form-label">Pitch Deck <span className="required">*</span></label>
                 <FileUpload
                   name="pitchDeck"
-                  label="Pitch Deck (Required)"
+                  label="Upload pitch deck (PDF, PPT, or Keynote)"
                   required
                   value={formData.pitchDeck}
                   onChange={(file: any) => handleFileChange("pitchDeck", file)}
                 />
-
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Financial Model (Optional)</label>
                 <FileUpload
                   name="financialModel"
-                  label="Financial Model (Optional)"
+                  label="Upload financial model (Excel, Google Sheets, or PDF)"
                   value={formData.financialModel}
                   onChange={(file: any) => handleFileChange("financialModel", file)}
                 />
-
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Business Plan (Optional)</label>
                 <FileUpload
                   name="businessPlan"
-                  label="Business Plan (Optional)"
+                  label="Upload business plan or executive summary"
                   value={formData.businessPlan}
                   onChange={(file: any) => handleFileChange("businessPlan", file)}
                 />
-
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Product Demo / Screenshots (Optional)</label>
                 <FileUpload
                   name="productDemo"
-                  label="Product Demo / Screenshots (Optional)"
+                  label="Upload demo video, screenshots, or prototype link"
                   value={formData.productDemo}
                   onChange={(file: any) => handleFileChange("productDemo", file)}
                 />
               </div>
             </div>
+          </Fade>
 
-            {/* Additional Information */}
-            <div className="p-8 md:p-12 border-b border-gray-100">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-[#3A7A94] rounded-lg flex items-center justify-center">
-                  <Rocket className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Additional Information</h2>
+          {/* Additional Information */}
+          <Fade delay={0.6} className="form-section">
+            <div className="section-label">11</div>
+            <h2 className="section-title">Additional Information</h2>
+            <div className="form-grid">
+              <div className="form-field full">
+                <label className="form-label">
+                  <Rocket style={{ width: 16, height: 16 }} />
+                  Why MUSEDATA? <span className="required">*</span>
+                </label>
+                <textarea name="whyUs" value={formData.whyUs} onChange={handleInputChange} required placeholder="Why do you want MUSEDATA as your investor?" className="form-textarea" />
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Why MUSEDATA? <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="whyUs"
-                    value={formData.whyUs}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Why do you want MUSEDATA as your investor? What value beyond capital are you looking for?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[120px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">How did you hear about us?</label>
-                  <input
-                    type="text"
-                    name="referralSource"
-                    value={formData.referralSource}
-                    onChange={handleInputChange}
-                    placeholder="Portfolio company, investor referral, conference, etc."
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Exit Strategy / Vision</label>
-                  <textarea
-                    name="exitStrategy"
-                    value={formData.exitStrategy}
-                    onChange={handleInputChange}
-                    placeholder="What's your long-term vision? IPO, acquisition, building for the long haul?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Current Challenges / Risks</label>
-                  <textarea
-                    name="challenges"
-                    value={formData.challenges}
-                    onChange={handleInputChange}
-                    placeholder="What are the biggest challenges or risks you're facing?"
-                    className="w-full px-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 min-h-[100px] resize-y focus:outline-none focus:border-[#1C4E64] focus:bg-white transition-all"
-                  />
-                </div>
+              <div className="form-field">
+                <label className="form-label">How did you hear about us?</label>
+                <input type="text" name="referralSource" value={formData.referralSource} onChange={handleInputChange} placeholder="Portfolio company, conference, referral..." className="form-input" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Exit Strategy / Vision</label>
+                <textarea name="exitStrategy" value={formData.exitStrategy} onChange={handleInputChange} placeholder="IPO, acquisition, building for the long haul?" className="form-textarea" />
+              </div>
+              <div className="form-field full">
+                <label className="form-label">Current Challenges / Risks</label>
+                <textarea name="challenges" value={formData.challenges} onChange={handleInputChange} placeholder="What are the biggest challenges you're facing?" className="form-textarea" />
               </div>
             </div>
+          </Fade>
 
-            {/* Terms & Submit */}
-            <div className="p-8 md:p-12 bg-white">
-              <div className="mb-8">
-                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
-                  <input
-                    type="checkbox"
-                    name="terms"
-                    id="terms"
-                    checked={formData.terms}
-                    onChange={handleInputChange}
-                    required
-                    className="w-5 h-5 mt-0.5 cursor-pointer accent-[#1C4E64] rounded"
-                  />
-                  <label htmlFor="terms" className="flex-1 text-sm text-gray-600 leading-relaxed">
-                    I agree to the{" "}
-                    <Link href="/terms" className="text-[#1C4E64] hover:underline font-medium">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link href="/privacy" className="text-[#1C4E64] hover:underline font-medium">
-                      Privacy Policy
-                    </Link>
-                    . I understand that all information provided will be kept confidential and used solely for
-                    investment evaluation purposes. <span className="text-red-500">*</span>
-                  </label>
-                </div>
+          {/* Terms & Submit */}
+          <Fade delay={0.65} className="form-section alt" style={{ paddingBottom: 40 }}>
+            <div className="terms-box">
+              <div className="terms-check">
+                <input type="checkbox" name="terms" id="terms" checked={formData.terms} onChange={handleInputChange} required />
+                <label htmlFor="terms" className="terms-label">
+                  I agree to the <Link href="/terms">Terms of Service</Link> and <Link href="/privacy">Privacy Policy</Link>. I understand that all information provided will be kept confidential and used solely for investment evaluation purposes. <span className="required">*</span>
+                </label>
               </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-5 px-8 bg-gradient-to-r from-[#1C4E64] to-[#2D5F73] hover:from-[#163B4F] hover:to-[#245167] disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-3">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Processing Application...
-                  </span>
-                ) : (
-                  "Submit Application"
-                )}
-              </button>
-
-              <p className="text-center text-sm text-gray-500 mt-6">
-                Our investment team will review your application and reach out within 2 weeks
-              </p>
             </div>
-          </form>
-        </div>
-      </div>
+            <button type="submit" disabled={isSubmitting} className="btn-submit">
+              {isSubmitting ? (
+                <>
+                  <span className="spinner" />
+                  Processing Application...
+                </>
+              ) : (
+                <>
+                  Submit Application <ArrowRight style={{ width: 16, height: 16 }} />
+                </>
+              )}
+            </button>
+            <p className="submit-note">Our investment team will review your application and reach out within 2 weeks</p>
+          </Fade>
+        </form>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-[#0f2942] text-white py-12">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="text-2xl font-bold mb-3">MUSEDATA</div>
-          <p className="text-white/70 text-sm mb-4">Backing the Next Generation of Transformative Companies</p>
-          <div className="flex justify-center gap-6 text-sm">
-            <a
-              href="mailto:partners@musedata.ai"
-              className="text-white/70 hover:text-white transition-colors"
-            >
-              investments@musedata.ai
+     <footer>
+        <div className="w">
+          <div className="footer-slim">
+            <a href="#" className="footer-logo">
+              <div className="footer-mark">
+                <img src={LOGO_B64} alt="MUSEDATA logo" />
+              </div>
+              <span className="footer-word">MUSEDATA</span>
             </a>
-            <span className="text-white/30">|</span>
-            <span className="text-white/70">© 2026 MUSEDATA</span>
+            <div className="footer-right">
+              <div className="footer-links-row">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Disclosures</a>
+                <a href="mailto:partners@musedata.ai">Contact</a>
+              </div>
+              <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
+            </div>
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 }
