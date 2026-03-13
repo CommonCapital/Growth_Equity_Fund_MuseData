@@ -204,7 +204,7 @@ export default function AboutPage() {
             <p className="ab-partner-body">
               The best partnerships are built on conviction, not checklists.
             </p>
-            <a href="mailto:partners@musedata.ai" className="ab-partner-cta">
+            <a href="/funding" className="ab-partner-cta">
               Apply for Capital &rarr;
             </a>
           </div>
@@ -227,7 +227,7 @@ export default function AboutPage() {
           Apply directly: the process begins with evidence, not introductions.
         </p>
         <div className="ab-cta-btns">
-          <a href="mailto:partners@musedata.ai" className="ab-btn-primary">Apply for Capital &rarr;</a>
+          <a href="/funding" className="ab-btn-primary">Apply for Capital &rarr;</a>
           <a href="mailto:partners@musedata.ai" className="ab-btn-ghost">Contact the Team</a>
         </div>
       </div>
