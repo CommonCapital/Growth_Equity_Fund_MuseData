@@ -195,8 +195,9 @@ export default function UnifiedNavbar({ currentPage, transparent = false }: Unif
       {/* ── NAV ─ */}
       <nav id="nav" className={scrolled ? "scrolled" : ""}>
         <div className="nav-inner">
-          <a href="#" className="nav-logo">
+          <a href="/" className="nav-logo">
             <div className="nav-mark">
+              
               <img src={LOGO_B64} alt="MUSEDATA logo" />
             </div>
             <span className="nav-word">MUSEDATA</span>
