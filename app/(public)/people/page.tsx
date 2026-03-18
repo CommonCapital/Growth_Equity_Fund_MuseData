@@ -141,15 +141,7 @@ export default function PeoplePage() {
         body{font-family:var(--sans);background:var(--white);color:var(--deep);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
         h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;}
 
-        .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
-        .logo-box{width:32px;height:32px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .logo-box img{height:19px;width:auto;}
-        .logo-name{font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--deep);line-height:1;}
-        .nav-links{display:flex;list-style:none;align-items:center;}
-        .nav-links a{display:flex;align-items:center;padding:0 .85rem;height:var(--nav-h);font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);text-decoration:none;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
-        .nav-links a:hover,.nav-links a.on{color:var(--deep);border-bottom-color:var(--bright);}
-        .nav-cta{display:inline-flex;align-items:center;height:36px;padding:0 1.4rem;border:1.5px solid var(--deep);color:var(--deep);font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s;white-space:nowrap;}
-        .nav-cta:hover{background:var(--deep);color:var(--white);}
+        
 
         /* PAGE HEADER */
         .page-header{background:var(--deep);padding:calc(var(--nav-h) + 5rem) 3rem 5rem;position:relative;overflow:hidden;}
