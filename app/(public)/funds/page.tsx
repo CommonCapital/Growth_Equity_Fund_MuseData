@@ -174,12 +174,7 @@ export default function FundsPage() {
           z-index: 9999;
         }
 
-        /* ── TYPOGRAPHY ── */
-        .eyebrow {
-          font-size: 0.6875rem; letter-spacing: 0.28em; text-transform: uppercase;
-          color: var(--teal); font-weight: 500;
-          display: flex; align-items: center; gap: 14px;
-        }
+        .eyebrow { font-size: 0.6875rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); font-weight: 500; display: flex; align-items: center; gap: 14px; }
         .eyebrow::before { content: ''; width: 28px; height: 1px; background: linear-gradient(90deg, var(--teal), transparent); flex-shrink: 0; }
         .eyebrow.light { color: var(--teal-bright); }
         .eyebrow.light::before { background: linear-gradient(90deg, var(--teal-bright), transparent); }
@@ -188,64 +183,34 @@ export default function FundsPage() {
         .section-h2 .hl { color: var(--teal-bright); }
         .section-h2.on-dark { color: #ffffff; }
 
-
-        /* ── BUTTONS ── */
-        .btn-primary {
-          font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600;
-          color: #fff; background: var(--teal);
-          padding: 16px 40px; border: none; cursor: pointer;
-          transition: all 0.3s; text-decoration: none; display: inline-block; position: relative; overflow: hidden;
-        }
+        .btn-primary { font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; color: #fff; background: var(--teal); padding: 16px 40px; border: none; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; position: relative; overflow: hidden; }
         .btn-primary::after { content: ''; position: absolute; inset: 0; background: var(--dark-bg); transform: translateX(-101%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
         .btn-primary:hover::after { transform: translateX(0); }
         .btn-primary span { position: relative; z-index: 1; }
 
-        .btn-outline {
-          font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500;
-          color: var(--teal); background: transparent;
-          padding: 15px 40px; border: 1px solid var(--border-strong);
-          cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block;
-        }
+        .btn-outline { font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; color: var(--teal); background: transparent; padding: 15px 40px; border: 1px solid var(--border-strong); cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
         .btn-outline:hover { border-color: var(--teal); background: var(--teal-dim); }
 
-        .btn-outline-dark {
-          font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500;
-          color: rgba(255,255,255,0.65); background: transparent;
-          padding: 15px 40px; border: 1px solid rgba(255,255,255,0.2);
-          cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block;
-        }
+        .btn-outline-dark { font-size: 0.875rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; color: rgba(255,255,255,0.65); background: transparent; padding: 15px 40px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
         .btn-outline-dark:hover { border-color: rgba(255,255,255,0.55); color: #fff; }
 
         /* ── HERO ── */
-        .hero {
-          min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
-          background: var(--dark-bg); position: relative; overflow: hidden;
-        }
-        .hero::before {
-          content: ''; position: absolute; inset: 0;
-          background: radial-gradient(ellipse 60% 80% at 10% 50%, rgba(255,255,255,0.025) 0%, transparent 60%), radial-gradient(ellipse 50% 70% at 85% 20%, rgba(42,127,168,0.1) 0%, transparent 55%);
-          pointer-events: none;
-        }
-        .hero-lines {
-          position: absolute; inset: 0;
-          background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-          background-size: 80px 80px;
-          mask-image: radial-gradient(ellipse 70% 80% at 100% 50%, black 0%, transparent 80%);
-        }
+        .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: var(--dark-bg); position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 10% 50%, rgba(255,255,255,0.025) 0%, transparent 60%), radial-gradient(ellipse 50% 70% at 85% 20%, rgba(42,127,168,0.1) 0%, transparent 55%); pointer-events: none; }
+        .hero-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 70% 80% at 100% 50%, black 0%, transparent 80%); }
         .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 72px 72px; position: relative; z-index: 2; }
         .hero-eyebrow { margin-bottom: 36px; }
         .hero-h1 { font-size: clamp(2.5rem, 4.5vw, 4rem); font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; color: #fff; margin-bottom: 28px; max-width: 560px; }
         .hero-h1 .hl { color: var(--teal-bright); font-weight: 300; }
         .hero-sub { font-size: 0.9375rem; line-height: 1.8; color: rgba(255,255,255,0.5); max-width: 420px; margin-bottom: 48px; font-weight: 300; }
         .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-        .hero-stats { display: flex; gap: 0; margin-top: 56px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .hs-item { flex: 1; padding-right: 28px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .hero-stats { display: flex; gap: 0; margin-top: 56px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
+        .hs-item { flex: 1; min-width: 80px; padding-right: 28px; border-right: 1px solid rgba(255,255,255,0.1); }
         .hs-item:last-child { border-right: none; padding-right: 0; padding-left: 28px; }
         .hs-item:not(:first-child) { padding-left: 28px; }
         .hs-num { font-size: 2.25rem; font-weight: 300; color: #fff; line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em; }
         .hs-label { font-size: 0.6875rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.35); font-weight: 500; }
 
-        /* Hero right */
         .hero-right { position: relative; display: flex; align-items: center; justify-content: center; padding: 120px 48px; z-index: 2; }
         .fund-preview-stack { position: relative; width: 100%; max-width: 400px; }
         .fpc-back2 { position: absolute; top: 40px; right: -40px; width: 100%; height: 100%; background: #fff; border: 1px solid rgba(30,95,126,0.08); z-index: 0; }
@@ -268,10 +233,9 @@ export default function FundsPage() {
         .fpc-track { height: 2px; background: rgba(30,95,126,0.1); position: relative; overflow: hidden; margin-bottom: 20px; }
         .fpc-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--dark-bg), var(--teal)); width: 55%; animation: barfill 2s cubic-bezier(0.4,0,0.2,1) forwards; }
         @keyframes barfill { from { width: 0; } to { width: 55%; } }
-        .fpc-coinvestors { display: flex; align-items: center; gap: 10px; font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(106,122,138,0.45); }
+        .fpc-coinvestors { display: flex; align-items: center; gap: 10px; font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(106,122,138,0.45); flex-wrap: wrap; }
         .fpc-badge { border: 1px solid var(--border-mid); color: var(--teal); padding: 4px 12px; font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
-        /* ── MARQUEE ── */
         .marquee-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 20px 0; overflow: hidden; background: #fff; position: relative; }
         .marquee-wrap::before, .marquee-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
         .marquee-wrap::before { left: 0; background: linear-gradient(90deg, #fff, transparent); }
@@ -281,13 +245,11 @@ export default function FundsPage() {
         .m-item { font-size: 0.6875rem; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(106,122,138,0.45); padding: 0 52px; white-space: nowrap; display: flex; align-items: center; font-weight: 400; }
         .m-sep  { width: 3px; height: 3px; background: var(--teal); border-radius: 50%; opacity: 0.35; margin: 0 52px; flex-shrink: 0; }
 
-        /* ── SECTION SHARED ── */
         .section-pad { padding: 112px 72px; }
         .section-inner { max-width: 1320px; margin: 0 auto; }
         .section-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end; margin-bottom: 72px; }
         .section-sub { font-size: 1rem; line-height: 1.9; color: var(--muted); font-weight: 300; }
 
-        /* ── OVERVIEW SPLIT ── */
         .overview-split { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
         .overview-panel { padding: 72px; }
         .overview-panel-light { background: #fff; border-right: 1px solid var(--border); }
@@ -311,7 +273,6 @@ export default function FundsPage() {
         .oi-desc { font-size: 0.8125rem; line-height: 1.7; color: var(--muted); font-weight: 300; }
         .oi-desc-dark { color: rgba(255,255,255,0.45); }
 
-        /* ── FUND CARDS ── */
         .funds-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); }
         .fund-card { background: #fff; padding: 56px 48px; position: relative; overflow: hidden; transition: background 0.35s; cursor: default; }
         .fund-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); }
@@ -352,7 +313,6 @@ export default function FundsPage() {
         .proven-badge { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; background: var(--teal); color: #fff; padding: 4px 10px; flex-shrink: 0; }
         .proven-desc { font-size: 0.875rem; line-height: 1.7; color: var(--muted); font-weight: 300; padding-left: 26px; }
 
-        /* ── BONUS ── */
         .bonus-inner { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 80px; align-items: center; }
         .bonus-h3 { font-size: 1.875rem; font-weight: 400; color: #fff; line-height: 1.2; margin-bottom: 14px; }
         .bonus-desc { font-size: 0.9375rem; color: rgba(255,255,255,0.5); line-height: 1.8; margin-bottom: 28px; max-width: 520px; }
@@ -367,7 +327,6 @@ export default function FundsPage() {
         .bonus-stat-val { font-size: 1.625rem; font-weight: 400; color: #fff; line-height: 1; margin-bottom: 6px; letter-spacing: -0.01em; }
         .bonus-stat-key { font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
 
-        /* ── COMPARE ── */
         .cmp-col-heads { display: grid; grid-template-columns: 260px 1fr 1fr; background: var(--dark-bg); border: 1px solid var(--border); border-bottom: none; }
         .cmp-ch-spacer { padding: 40px 44px; border-right: 1px solid rgba(255,255,255,0.08); }
         .cmp-ch { padding: 40px 48px; border-right: 1px solid rgba(255,255,255,0.08); position: relative; }
@@ -399,17 +358,16 @@ export default function FundsPage() {
         .decide-head { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
         .decide-desc { font-size: 0.9375rem; line-height: 1.75; color: var(--muted); font-weight: 300; max-width: 400px; }
 
-        .talk-strip { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 32px 40px; border: 1px solid var(--border); border-top: none; background: var(--ghost); }
+        .talk-strip { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 32px 40px; border: 1px solid var(--border); border-top: none; background: var(--ghost); flex-wrap: wrap; }
         .talk-label { font-size: 0.6875rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: 6px; }
         .talk-desc { font-size: 0.9375rem; color: var(--muted); font-weight: 300; }
 
-        /* ── APEX ── */
         .apex-inner { display: grid; grid-template-columns: 1fr 380px; gap: 80px; align-items: start; }
         .apex-sub { font-size: 1rem; color: rgba(255,255,255,0.5); font-weight: 300; margin: 14px 0 20px; font-style: italic; }
         .apex-desc { font-size: 0.9375rem; line-height: 1.85; color: rgba(255,255,255,0.5); font-weight: 300; max-width: 480px; margin-bottom: 28px; }
         .apex-checks { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
         .apex-check-item { display: flex; align-items: center; gap: 12px; font-size: 0.875rem; color: rgba(255,255,255,0.55); font-weight: 300; }
-        .apex-contact { display: flex; align-items: center; gap: 12px; font-size: 0.875rem; color: rgba(255,255,255,0.35); padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .apex-contact { display: flex; align-items: center; gap: 12px; font-size: 0.875rem; color: rgba(255,255,255,0.35); padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
         .apex-contact a { color: var(--teal-bright); text-decoration: none; font-weight: 600; transition: color 0.2s; }
         .apex-contact a:hover { color: var(--teal-3); }
         .apex-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 36px; position: relative; }
@@ -421,7 +379,6 @@ export default function FundsPage() {
         .apex-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 20px 0; }
         .apex-tag { font-size: 0.6875rem; letter-spacing: 0.1em; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); padding: 5px 12px; }
 
-        /* ── STRUCTURE ── */
         .struct-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
         .struct-item { background: #fff; padding: 36px 32px; }
         .struct-item-wide { grid-column: 1 / -1; background: var(--ghost); border-top: 1px solid var(--border); }
@@ -429,7 +386,6 @@ export default function FundsPage() {
         .struct-val { font-size: 1rem; color: var(--dark); line-height: 1.55; }
         .struct-val strong { color: var(--teal); font-weight: 600; }
 
-        /* ── SIGNUP ── */
         .signup-inner { display: grid; grid-template-columns: 1fr 1fr; min-height: 600px; }
         .signup-left { background: var(--dark-bg); padding: 96px 80px 96px 72px; border-right: 1px solid rgba(255,255,255,0.07); position: relative; overflow: hidden; }
         .signup-left::before { content: ''; position: absolute; bottom: -80px; left: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(42,127,168,0.08) 0%, transparent 70%); pointer-events: none; }
@@ -457,33 +413,31 @@ export default function FundsPage() {
         .confirmed-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
         .confirmed-desc { font-size: 0.9375rem; color: rgba(255,255,255,0.5); font-weight: 300; line-height: 1.7; }
 
-        /* ── FOOTER ── */
-         /* ── FOOTER (fixed slim) ── */
+        /* ── FOOTER — static flow ── */
         footer {
-          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-          background: var(--footer-bg);
+          position: static;
+          background: var(--dark-bg);
           border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        .w { max-width: 1320px; margin: 0 auto; padding: 0 72px; }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: wrap; }
         .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
         .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
         .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
-        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
-        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
 
-        /* ── FADE UP ── */
         .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1); }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
 
         /* ── RESPONSIVE ── */
         @media(max-width:1100px){
-          .hero { grid-template-columns: 1fr; }
+          .hero { grid-template-columns: 1fr; min-height: auto; }
           .hero-right { display: none; }
-          nav { padding: 0 32px; }
           .section-pad { padding: 80px 32px; }
           .section-intro { grid-template-columns: 1fr; gap: 20px; }
           .overview-split { grid-template-columns: 1fr; }
@@ -497,25 +451,44 @@ export default function FundsPage() {
           .signup-inner { grid-template-columns: 1fr; }
           .signup-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 64px 32px; }
           .signup-right { padding: 64px 32px; }
-          footer { padding: 64px 32px 40px; }
-          .footer-grid { grid-template-columns: 1fr 1fr; padding: 0; }
-          .footer-bottom { flex-direction: column; gap: 16px; }
-          .footer-legal { text-align: left; }
-          .hero-left { padding: 72px 32px 80px; }
           .apex-inner { grid-template-columns: 1fr; }
+          .w { padding: 0 32px; }
         }
-        @media(max-width:700px){
-          .struct-grid { grid-template-columns: 1fr 1fr; }
-          .form-row { grid-template-columns: 1fr; }
-          .hero-stats { flex-wrap: wrap; }
-          .hs-item { flex: 0 0 calc(50% - 12px); }
-          .footer-grid { grid-template-columns: 1fr; }
+        @media(max-width:768px){
+          .hero-left { padding: 80px 1.25rem 56px; }
+          .hero-stats { flex-wrap: wrap; gap: 0; }
+          .hs-item { flex: 0 0 50%; border-right: none !important; padding: 12px 0 !important; border-bottom: 1px solid rgba(255,255,255,0.08); }
+          .hs-item:nth-child(odd) { padding-right: 8px !important; }
+          .hero-actions { flex-direction: column; align-items: stretch; }
+          .hero-actions .btn-primary, .hero-actions .btn-outline-dark { text-align: center; padding: 14px 20px; }
+          .section-pad { padding: 56px 1.25rem; }
+          .overview-panel { padding: 40px 1.25rem; }
+          .fund-card { padding: 36px 1.25rem; }
+          .bonus-inner { padding: 0; }
+          .talk-strip { flex-direction: column; align-items: flex-start; }
           .decide-split { grid-template-columns: 1fr; }
+          .decide-card { padding: 32px 1.25rem; }
+          .struct-grid { grid-template-columns: 1fr; }
+          .signup-left { padding: 48px 1.25rem; }
+          .signup-right { padding: 48px 1.25rem; }
+          .form-row { grid-template-columns: 1fr; }
+          .form-submit { align-self: stretch; text-align: center; }
+          .w { padding: 0 1.25rem; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .footer-links-row { gap: 12px; }
+          /* Prevent text overflow */
+          * { word-break: break-word; overflow-wrap: break-word; }
+          h1, h2, h3, p { max-width: 100%; }
+        }
+        @media(max-width:500px){
+          .cmp-col-heads, .cmp-row, .cmp-cta-row { grid-template-columns: 1fr; }
+          .cmp-ch:first-child { border-right: none; }
+          .alumni-grid { grid-template-columns: 1fr 1fr; }
         }
       `}</style>
 
-     <UnifiedNavbar />
-      
+      <UnifiedNavbar />
 
       {/* ── HERO ── */}
       <section className="hero" id="home" style={{ paddingTop: 72 }}>
@@ -546,7 +519,6 @@ export default function FundsPage() {
           </div>
         </div>
 
-        {/* Hero right — fund card stack */}
         <div className="hero-right">
           <div className="fund-preview-stack">
             <div className="fpc-back2" />
@@ -591,7 +563,6 @@ export default function FundsPage() {
 
       {/* ── FUNDS OVERVIEW / ARCHITECTURE ── */}
       <section id="architecture">
-        {/* Intro bar */}
         <div style={{ background:"#fff", borderTop:"1px solid var(--border)", borderBottom:"1px solid var(--border)", padding:"80px 72px 72px" }}>
           <div className="section-inner">
             <FadeUp className="section-intro" style={{ marginBottom: 0 }}>
@@ -606,9 +577,7 @@ export default function FundsPage() {
           </div>
         </div>
 
-        {/* Two-panel split */}
         <div className="overview-split">
-          {/* Left: Construction */}
           <div className="overview-panel overview-panel-light">
             <FadeUp className="overview-panel-head">
               <div className="eyebrow">Portfolio Construction</div>
@@ -627,7 +596,6 @@ export default function FundsPage() {
             </FadeUp>
           </div>
 
-          {/* Right: Investor benefits */}
           <div className="overview-panel overview-panel-dark">
             <FadeUp className="overview-panel-head">
               <div className="eyebrow light">Individual Investors</div>
@@ -636,7 +604,7 @@ export default function FundsPage() {
             </FadeUp>
             <FadeUp className="overview-items">
               {INVESTOR_ITEMS.map(({ title, desc, last }) => (
-                <div key={title} className={`overview-item overview-item-dark${last ? "" : ""}`} style={last ? { borderBottom:"none" } : {}}>
+                <div key={title} className={`overview-item overview-item-dark`} style={last ? { borderBottom:"none" } : {}}>
                   <div className="oi-check oi-check-dark" />
                   <div>
                     <div className="oi-title oi-title-dark">{title}</div>
@@ -663,7 +631,6 @@ export default function FundsPage() {
           </FadeUp>
 
           <FadeUp className="funds-grid">
-            {/* 01: Alumni */}
             <div className="fund-card">
               <div className="card-num">01</div>
               <div className="card-type">Community Focus</div>
@@ -682,7 +649,6 @@ export default function FundsPage() {
               </div>
             </div>
 
-            {/* 02: Focused */}
             <div className="fund-card">
               <div className="card-num">02</div>
               <div className="card-type">Sector Expertise</div>
@@ -698,7 +664,6 @@ export default function FundsPage() {
               </div>
             </div>
 
-            {/* 03: Foundation */}
             <div className="fund-card">
               <div className="card-num">03</div>
               <div className="card-type">Maximum Diversification</div>
@@ -714,7 +679,6 @@ export default function FundsPage() {
               </div>
             </div>
 
-            {/* 04: Proven Performers */}
             <div className="fund-card">
               <div className="card-num">04</div>
               <div className="card-type">Returning Investors Only</div>
@@ -999,7 +963,7 @@ export default function FundsPage() {
       </section>
 
       {/* ── FOOTER ── */}
-     <footer>
+      <footer>
         <div className="w">
           <div className="footer-slim">
             <a href="#" className="footer-logo">

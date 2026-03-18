@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import UnifiedNavbar, { LOGO_B64 } from "@/components/UnifiedNavbar/UnifiedNavbar"
-/* ─── Data ─── */
+
 const CARDS = [
   {
     tag: "Strategy",
@@ -55,24 +55,6 @@ const NET_CARDS = [
   { title: "Growth Partners",    desc: "Revenue-focused partners who open doors to enterprise customers, distribution channels, and strategic alliances that accelerate commercial momentum.",         lnk: "See growth resources" },
 ];
 
-/* ─── Logo mark ─── */
-function LogoMark({ size = 36 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 22 22" fill="none" style={{ background: "#fff", padding: 4 }}>
-      <rect x="0"  y="0"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="0"  width="6" height="6" fill="#0a2433"/>
-      <rect x="16" y="0"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="0"  y="8"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="8"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="16" y="8"  width="6" height="6" fill="#0a2433"/>
-      <rect x="0"  y="16" width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="16" width="6" height="6" fill="#1a4e66"/>
-      <rect x="16" y="16" width="6" height="6" rx="3" fill="#000"/>
-    </svg>
-  );
-}
-
-/* ─── Reveal wrapper ─── */
 function Rv({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -91,7 +73,6 @@ function Rv({ children, className = "", delay = 0 }: { children: React.ReactNode
   );
 }
 
-/* ─── Counter ─── */
 function Counter({ target }: { target: number }) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -104,7 +85,7 @@ function Counter({ target }: { target: number }) {
         let t0: number | null = null;
         const step = (ts: number) => {
           if (!t0) t0 = ts;
-          const p    = Math.min((ts - t0) / 1400, 1);
+          const p = Math.min((ts - t0) / 1400, 1);
           const ease = 1 - Math.pow(1 - p, 3);
           setVal(Math.floor(ease * target));
           if (p < 1) requestAnimationFrame(step);
@@ -118,9 +99,8 @@ function Counter({ target }: { target: number }) {
   return <span ref={ref}>{val}</span>;
 }
 
-/* ─── Page ─── */
 export default function SRGPage() {
-  const [mobOpen,  setMobOpen]  = useState(false);
+  const [mobOpen, setMobOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -151,27 +131,15 @@ export default function SRGPage() {
           --ff:     'Inter', sans-serif;
         }
 
-        body {
-          background: var(--white);
-          color: var(--deep);
-          font-family: var(--ff);
-          font-size: 1rem;
-          font-weight: 300;
-          line-height: 1.75;
-          overflow-x: hidden;
-          -webkit-font-smoothing: antialiased;
-        }
+        body { background: var(--white); color: var(--deep); font-family: var(--ff); font-size: 1rem; font-weight: 300; line-height: 1.75; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
         .hl { color: var(--bright); font-weight: 500; }
 
-        /* REVEAL */
         .rv { opacity: 0; transform: translateY(32px); transition: opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1); }
         .rv.on { opacity: 1; transform: translateY(0); }
 
-        /* KEYFRAMES */
         @keyframes fu     { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-
 
         /* ── HERO ── */
         .hero { background:var(--deep); display:flex; flex-direction:column; }
@@ -260,20 +228,20 @@ export default function SRGPage() {
         .nc-lnk   { font-size:.73rem; letter-spacing:.18em; text-transform:uppercase; color:var(--bright); text-decoration:none; }
         .nc-lnk:hover { opacity:.7; }
 
-        /* ── FOOTER ── */
-         /* ── FOOTER (fixed slim) ── */
+        /* ── FOOTER — static flow ── */
         footer {
-          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-          background: var(--footer-bg);
+          position: static;
+          background: var(--deep);
           border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        .w { max-width: 1600px; margin: 0 auto; padding: 0 4rem; }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: wrap; }
         .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
         .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
         .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
-        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
-        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
@@ -286,19 +254,27 @@ export default function SRGPage() {
           .stmt-in { grid-template-columns:1fr; gap:5rem; }
           .net-head { grid-template-columns:1fr; gap:3rem; }
           .net-cards { grid-template-columns:1fr 1fr; }
+          .w { padding: 0 2rem; }
         }
         @media(max-width:768px){
-          .hero-body { padding-left:1.5rem; padding-right:1.5rem; padding-top:calc(var(--nh) + 4rem); }
+          .hero-body { padding-left:1.25rem; padding-right:1.25rem; padding-top:calc(var(--nh) + 4rem); }
           .hero-foot { grid-template-columns:1fr; }
-          .hf-cell { border-right:none; border-bottom:1px solid rgba(255,255,255,.1); padding-left:1.5rem; padding-right:1.5rem; }
-          .intro-in { padding:5rem 1.5rem; gap:2rem; }
-          .cards-grid { grid-template-columns:1fr; padding:0 1.5rem 5rem; }
-          .stmt-in { padding:5rem 1.5rem; }
-          .net-in { padding:5rem 1.5rem; }
+          .hf-cell { border-right:none; border-bottom:1px solid rgba(255,255,255,.1); padding:1.5rem 1.25rem; }
+          .intro-in { padding:5rem 1.25rem; gap:2rem; }
+          .cards-grid { grid-template-columns:1fr; padding:0 1.25rem 5rem; }
+          .card { padding: 2.5rem 1.25rem; }
+          .stmt-in { padding:5rem 1.25rem; }
+          .net-in { padding:5rem 1.25rem; }
+          .net-head { padding-bottom: 3rem; margin-bottom: 3rem; }
           .net-cards { grid-template-columns:1fr; }
-          .ft { flex-direction:column; text-align:center; padding:2rem 1.5rem; }
-          .ft-links { justify-content:center; }
-          .nav-in { padding:0 1.5rem; }
+          .nc { padding: 2.5rem 1.25rem; }
+          .w { padding: 0 1.25rem; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .footer-links-row { gap: 12px; }
+          /* Prevent text overflow */
+          * { word-break: break-word; overflow-wrap: break-word; }
+          h1, h2, h3, p { max-width: 100%; }
         }
       `}</style>
 
@@ -380,7 +356,6 @@ export default function SRGPage() {
                 <ul className="card-list">
                   {c.list.map(item => <li key={item}>{item}</li>)}
                 </ul>
-                
               </div>
             </Rv>
           ))}
@@ -454,7 +429,6 @@ export default function SRGPage() {
                 <div key={nc.title} className="nc" style={{ transitionDelay: `${i * 0.08}s` }}>
                   <div className="nc-title">{nc.title}</div>
                   <p className="nc-desc">{nc.desc}</p>
-                  
                 </div>
               ))}
             </div>

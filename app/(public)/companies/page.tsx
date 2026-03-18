@@ -35,7 +35,7 @@ export default function CompaniesPage() {
         .hero-h { font-family: 'Inter', sans-serif; font-size: clamp(2.4rem, 4.5vw, 5.2rem); font-weight: 300; line-height: 1.1; color: var(--white); letter-spacing: -.01em; max-width: 700px; opacity: 0; animation: rise .8s .2s ease forwards; }
         .hero-h em { color: var(--bright); }
         .hero-sub { margin-top: 2rem; font-size: 1rem; line-height: 1.8; color: rgba(255,255,255,.42); max-width: 520px; opacity: 0; animation: rise .8s .35s ease forwards; }
-        .hero-bar { max-width: 1440px; margin: 3.5rem auto 0; border-top: 1px solid rgba(255,255,255,.08); padding: 1.4rem 0; display: flex; align-items: center; gap: 3rem; position: relative; z-index: 1; opacity: 0; animation: rise .6s .5s ease forwards; }
+        .hero-bar { max-width: 1440px; margin: 3.5rem auto 0; border-top: 1px solid rgba(255,255,255,.08); padding: 1.4rem 0; display: flex; align-items: center; gap: 3rem; position: relative; z-index: 1; opacity: 0; animation: rise .6s .5s ease forwards; flex-wrap: wrap; }
         .hbar-item { display: flex; align-items: center; gap: .8rem; }
         .hbar-n { font-size: 1.8rem; font-weight: 300; color: var(--white); }
         .hbar-n sup { font-size: .85rem; color: var(--bright); }
@@ -106,15 +106,20 @@ export default function CompaniesPage() {
         /* ── ANIMATION ── */
         @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── FOOTER ── */
-        footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: var(--footer-bg); border-top: 1px solid rgba(255,255,255,0.06); }
-        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        /* ── FOOTER — static flow ── */
+        footer {
+          position: static;
+          background: var(--deep);
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .w { max-width: 1440px; margin: 0 auto; padding: 0 3rem; }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: wrap; }
         .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
         .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
         .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
-        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
-        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
@@ -125,16 +130,25 @@ export default function CompaniesPage() {
           .p-card.featured { grid-column: span 2; flex-direction: column; gap: 0; }
         }
         @media(max-width:768px) {
-          .hero { padding: calc(var(--nav-h) + 3.5rem) 1.5rem 4rem; }
-          .focus { padding: 3rem 1.5rem; }
+          .hero { padding: calc(var(--nav-h) + 3.5rem) 1.25rem 4rem; }
+          .focus { padding: 3rem 1.25rem; }
           .focus-inner { grid-template-columns: 1fr; gap: 1.5rem; }
-          .portfolio { padding: 3rem 1.5rem 5rem; }
+          .portfolio { padding: 3rem 1.25rem 5rem; }
           .p-grid { grid-template-columns: 1fr; }
-          .p-card.featured { grid-column: span 1; }
-          .strip { padding: 4rem 1.5rem; }
+          .p-card { padding: 1.75rem 1.25rem; }
+          .p-card.featured { grid-column: span 1; flex-direction: column; gap: 0; }
+          .strip { padding: 4rem 1.25rem; }
           .strip-inner { grid-template-columns: 1fr; gap: 2rem; }
-          .cta { padding: 5rem 1.5rem; }
+          .cta { padding: 5rem 1.25rem; }
           .hbar-div { display: none; }
+          .hero-bar { gap: 1.5rem; }
+          .w { padding: 0 1.25rem; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .footer-links-row { gap: 12px; }
+          /* Prevent text overflow */
+          * { word-break: break-word; overflow-wrap: break-word; }
+          h1, h2, h3, p { max-width: 100%; }
         }
       `}</style>
 

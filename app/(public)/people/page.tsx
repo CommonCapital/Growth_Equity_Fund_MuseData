@@ -3,104 +3,68 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { LOGO_B64 } from "@/components/UnifiedNavbar/UnifiedNavbar";
 
-/* ─── Types ─── */
 interface Person {
   init: string;
   name: string;
   title: string;
-  
   logoTags: string[];
   bio: string;
 }
 
-/* ─── People data ─── */
 const people: Record<string, Person> = {
   lead1: {
     init: 'CA', name: 'Collin Assam', title: 'Co-Founder & Managing Partner',
-   
     logoTags: ['Notre Dame'],
     bio: "Collin founded MUSEDATA Growth Equity to bring institutional-grade infrastructure to emerging private companies. His career spans Arrowroot Capital Management, ROTH Capital Partners, and Deutsche Bank, where he developed deep expertise in private equity, investment banking, and strategic capital deployment. At MUSEDATA, he leads overall investment strategy, portfolio company engagement, and firm development."
   },
   lead2: {
     init: 'NK', name: 'Nico Knutzen', title: 'COO & Partner',
-    
     logoTags: ['Georgia Tech'],
     bio: 'Nico brings a track record of large-scale operational transformation across McKinsey & Company and Alvarez & Marsal, where he advised Fortune 500 and private equity-backed companies on business technology, digital operations, and performance improvement. At MUSEDATA, he oversees day-to-day operations and leads portfolio infrastructure delivery — ensuring every company in the portfolio is built to scale and earn institutional trust.'
   },
   lead4: {
     init: 'BK', name: 'Brien Kurtz', title: 'Advisor, AI & Data Strategy',
-    
     logoTags: ['Notre Dame'],
     bio: 'Brien brings 15+ years of experience building enterprise-grade data systems at Bridgewater Associates, Pratt & Whitney, and Cooper. His work spans scalable data pipelines, people analytics, and AI-driven infrastructure — making him a critical voice on how MUSEDATA portfolio companies architect their data layer for long-term institutional value.'
   },
   lead6: {
     init: 'SS', name: 'Stavan Shah', title: 'Strategic Growth Advisor',
-   
     logoTags: ['Kellogg', 'Georgia Tech'],
     bio: "Stavan's background spans VC-level investing, early-stage technology, and strategic consulting at McKinsey & Company. He is currently completing his MBA at Northwestern's Kellogg School of Management. He advises MUSEDATA portfolio companies on growth strategy, go-to-market execution, and venture positioning — bridging the gap between operator instincts and investor expectations."
   },
   lead10: {
     init: 'AL', name: 'Alex Lee', title: 'Legal Strategy Advisor',
-    
     logoTags: ['WashU Law', 'Notre Dame'],
     bio: 'Alex provides legal strategy counsel to MUSEDATA and its portfolio companies, with a foundation from Washington University School of Law. He advises on deal structuring, regulatory considerations, and the legal frameworks that underpin institutional investment relationships.'
   },
   lead7: {
     init: 'NA', name: 'Noor Ul Ain', title: 'Investment Analyst',
-    
     logoTags: ['Oxford Brookes'],
     bio: "Noor supports MUSEDATA's investment team across deal evaluation, market research, and portfolio analysis. An Oxford Brookes University alumna, she brings structured analytical thinking and a sharp eye for financial detail to every engagement — helping the team move quickly and rigorously on new opportunities."
   },
   lead8: {
     init: 'NO', name: 'Nursan Omarov', title: 'Lead Developer',
-    
     logoTags: ['HRAI'],
     bio: "Nursan leads technology development for MUSEDATA's internal platforms and portfolio company tools. He brings deep expertise in AI systems, enterprise software architecture, and machine learning infrastructure — advising portfolio companies on how to build technology that compounds in value and supports institutional due diligence."
   },
   lead9: {
     init: 'AB', name: 'Arjun Bhattarai', title: 'Private Equity Intern',
-    
     logoTags: ['Harvard'],
     bio: 'Arjun supports the MUSEDATA investment team across deal sourcing, financial modeling, and portfolio research. A Harvard University student, he brings strong analytical foundations and a commitment to the rigorous work that underlies every investment thesis MUSEDATA pursues.'
   }
 };
 
-/* ─── Logo mark ─── */
-function LogoMark({ size = 32 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 22 22" fill="none" style={{ background: "#fff", padding: 4 }}>
-      <rect x="0"  y="0"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="0"  width="6" height="6" fill="#0a2433"/>
-      <rect x="16" y="0"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="0"  y="8"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="8"  width="6" height="6" fill="#1a4e66"/>
-      <rect x="16" y="8"  width="6" height="6" fill="#0a2433"/>
-      <rect x="0"  y="16" width="6" height="6" fill="#1a4e66"/>
-      <rect x="8"  y="16" width="6" height="6" fill="#1a4e66"/>
-      <rect x="16" y="16" width="6" height="6" rx="3" fill="#000"/>
-    </svg>
-  );
-}
-
-/* ─── Person card ─── */
 function PersonCard({ id, person, index, onOpen }: { id: string; person: Person; index: number; onOpen: (id: string) => void }) {
   const ref = useRef<HTMLDivElement>(null);
-  
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     el.style.opacity = '0';
     el.style.transform = 'translateY(28px)';
     el.style.transition = `opacity .6s ${index * 0.07}s ease, transform .6s ${index * 0.07}s cubic-bezier(.22,1,.36,1)`;
-    
     const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-        io.disconnect();
-      }
+      if (entry.isIntersecting) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; io.disconnect(); }
     }, { threshold: 0.05 });
-    
     io.observe(el);
     return () => io.disconnect();
   }, [index]);
@@ -114,7 +78,6 @@ function PersonCard({ id, person, index, onOpen }: { id: string; person: Person;
         <div className="lc-body">
           <div className="lc-name">{person.name}</div>
           <div className="lc-title">{person.title}</div>
-        
         </div>
         <div className="lc-arrow">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -126,16 +89,13 @@ function PersonCard({ id, person, index, onOpen }: { id: string; person: Person;
   );
 }
 
-/* ─── Modal ─── */
 function Modal({ id, onClose }: { id: string | null; onClose: () => void }) {
   const person = id ? people[id] : null;
-
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
-
   useEffect(() => {
     document.body.style.overflow = id ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -150,7 +110,6 @@ function Modal({ id, onClose }: { id: string | null; onClose: () => void }) {
             <div className="modal-init">{person.init}</div>
             <div className="modal-name">{person.name}</div>
             <div className="modal-title">{person.title}</div>
-            
             <div className="modal-bio">{person.bio}</div>
           </>
         )}
@@ -159,18 +118,10 @@ function Modal({ id, onClose }: { id: string | null; onClose: () => void }) {
   );
 }
 
-/* ─── Page ─── */
 export default function PeoplePage() {
   const [modalId, setModalId] = useState<string | null>(null);
-
-  // Modal functions
-  const openModal = (id: string) => {
-    setModalId(id);
-  };
-
-  const closeModalBtn = () => {
-    setModalId(null);
-  };
+  const openModal = (id: string) => { setModalId(id); };
+  const closeModalBtn = () => { setModalId(null); };
 
   return (
     <>
@@ -262,20 +213,20 @@ export default function PeoplePage() {
         .cta-btn{display:inline-flex;align-items:center;gap:.9rem;height:50px;padding:0 2.6rem;background:var(--deep);color:var(--white);font-size:.75rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:background .22s,transform .18s;}
         .cta-btn:hover{background:var(--main);transform:translateY(-2px);}
 
-        /* FOOTER */
-         /* ── FOOTER (fixed slim) ── */
+        /* ── FOOTER — static flow ── */
         footer {
-          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-          background: var(--footer-bg);
+          position: static;
+          background: var(--deep);
           border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
+        .w { max-width: 1440px; margin: 0 auto; padding: 0 3rem; }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: wrap; }
         .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
         .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
         .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
-        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
-        .footer-links-row { display: flex; align-items: center; gap: 24px; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
@@ -295,8 +246,26 @@ export default function PeoplePage() {
         .modal-bio{font-size:.9375rem;font-weight:400;line-height:1.8;color:var(--slate);margin-top:1.8rem;padding-top:1.8rem;border-top:1px solid var(--border);}
 
         @media(max-width:1100px){.team-grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:768px){.nav-links{display:none;}.ft{grid-template-columns:1fr;gap:1.4rem;text-align:center;}.ft-copy{text-align:center;}.ft-links{flex-wrap:wrap;justify-content:center;}}
-        @media(max-width:520px){.lc-inner{padding:1.8rem 1.6rem;}.team-section{padding:3.5rem 1.5rem;}.team-grid{grid-template-columns:1fr;}}
+        @media(max-width:768px){
+          .page-header { padding: calc(var(--nav-h) + 3rem) 1.25rem 4rem; }
+          .team-section { padding: 3rem 1.25rem; }
+          .team-grid { grid-template-columns: repeat(2, 1fr); }
+          .band { padding: 4rem 1.25rem; }
+          .cta { padding: 5rem 1.25rem; }
+          .w { padding: 0 1.25rem; }
+          .footer-slim { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 0; }
+          .footer-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .footer-links-row { gap: 12px; }
+          .modal { padding: 2rem 1.25rem; max-height: 90vh; }
+          /* Prevent text overflow */
+          * { word-break: break-word; overflow-wrap: break-word; }
+          h1, h2, h3, p { max-width: 100%; }
+        }
+        @media(max-width:520px){
+          .lc-inner{padding:1.8rem 1.25rem;}
+          .team-section{padding:3rem 1.25rem;}
+          .team-grid{grid-template-columns:1fr;}
+        }
       `}</style>
 
       {/* ── PAGE HEADER ── */}
@@ -344,7 +313,7 @@ export default function PeoplePage() {
       </div>
 
       {/* ── FOOTER ── */}
-     <footer>
+      <footer>
         <div className="w">
           <div className="footer-slim">
             <a href="#" className="footer-logo">
@@ -366,7 +335,6 @@ export default function PeoplePage() {
         </div>
       </footer>
 
-      {/* ── MODAL ── */}
       <Modal id={modalId} onClose={closeModalBtn} />
     </>
   );
