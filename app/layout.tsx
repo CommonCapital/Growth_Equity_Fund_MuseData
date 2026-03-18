@@ -48,7 +48,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <HydrationReady>
-                <UnifiedNavbar />
+               
                 <Suspense fallback={<Loading />}>
                   {children}
                 </Suspense>
