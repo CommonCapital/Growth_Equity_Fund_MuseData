@@ -488,6 +488,7 @@ export default function StartupApplicationPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
         .submit-note { text-align: center; font-size: 0.7rem; color: var(--label-color); margin-top: 16px; }
          /* ── FOOTER (fixed slim) ── */
+        /* ── FOOTER (fixed slim) ── */
         footer {
           position: static;
           background: var(--footer-bg);
@@ -503,7 +504,7 @@ export default function StartupApplicationPage() {
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
- 
+
         /* Responsive */
         @media(max-width:768px){
           .hero-inner { padding: 56px 24px 72px; }
@@ -1014,7 +1015,7 @@ export default function StartupApplicationPage() {
       </main>
 
       {/* Footer */}
-     <footer>
+    <footer>
         <div className="w">
           <div className="footer-slim">
             <a href="#" className="footer-logo">

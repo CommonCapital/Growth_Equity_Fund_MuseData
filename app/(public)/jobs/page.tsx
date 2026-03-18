@@ -284,26 +284,19 @@ export default function JobsPage() {
         }
         .cta-btn:hover { background: #2b8fb5; gap: 18px; }
         /* Footer */
-        #jobs-footer {
-          position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-          background: var(--footer-bg); border-top: 1px solid rgba(255,255,255,0.06);
-        }
          /* ── FOOTER (fixed slim) ── */
-        
-        /* ── FOOTER — static flow ── */
         footer {
           position: static;
-          background: var(--deep);
+          background: var(--footer-bg);
           border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .w { max-width: 1600px; margin: 0 auto; padding: 0 4rem; }
-        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: wrap; }
+        .footer-slim { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; gap: 24px; flex-wrap: nowrap; }
         .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
         .footer-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .footer-mark img { width: 28px; height: 28px; object-fit: contain; display: block; }
         .footer-word { font-size: 0.733rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); line-height: 1; white-space: nowrap; }
-        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; }
-        .footer-links-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .footer-right { display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
+        .footer-links-row { display: flex; align-items: center; gap: 24px; }
         .footer-links-row a { font-size: 0.633rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; white-space: nowrap; line-height: 1; }
         .footer-links-row a:hover { color: rgba(255,255,255,0.7); }
         .footer-copy { font-size: 0.633rem; color: rgba(255,255,255,0.22); letter-spacing: 0.04em; line-height: 1; white-space: nowrap; flex-shrink: 0; }
@@ -453,26 +446,26 @@ export default function JobsPage() {
 
       {/* Footer */}
      <footer>
-            <div className="w">
-              <div className="footer-slim">
-                <a href="#" className="footer-logo">
-                  <div className="footer-mark">
-                    <img src={LOGO_B64} alt="MUSEDATA logo" />
-                  </div>
-                  <span className="footer-word">MUSEDATA</span>
-                </a>
-                <div className="footer-right">
-                  <div className="footer-links-row">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Use</a>
-                    <a href="#">Disclosures</a>
-                    <a href="mailto:partners@musedata.ai">Contact</a>
-                  </div>
-                  <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
-                </div>
+        <div className="w">
+          <div className="footer-slim">
+            <a href="#" className="footer-logo">
+              <div className="footer-mark">
+                <img src={LOGO_B64} alt="MUSEDATA logo" />
               </div>
+              <span className="footer-word">MUSEDATA</span>
+            </a>
+            <div className="footer-right">
+              <div className="footer-links-row">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Disclosures</a>
+                <a href="mailto:partners@musedata.ai">Contact</a>
+              </div>
+              <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
             </div>
-          </footer>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

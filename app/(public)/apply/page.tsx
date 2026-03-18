@@ -342,6 +342,7 @@ export default function ApplyPageImproved() {
         .submit-note { text-align: center; font-size: 0.7rem; color: var(--label-color); margin-top: 16px; }
         /* Footer */
          /* ── FOOTER (fixed slim) ── */
+      /* ── FOOTER (fixed slim) ── */
         footer {
           position: static;
           background: var(--footer-bg);
@@ -600,20 +601,20 @@ export default function ApplyPageImproved() {
       </main>
 
       {/* Footer */}
-      <footer id="apply-footer">
+      <footer>
         <div className="w">
           <div className="footer-slim">
-            <a href="/" className="footer-logo">
+            <a href="#" className="footer-logo">
               <div className="footer-mark">
-                <img src={LOGO_B64} alt="MUSEDATA" />
+                <img src={LOGO_B64} alt="MUSEDATA logo" />
               </div>
               <span className="footer-word">MUSEDATA</span>
             </a>
             <div className="footer-right">
               <div className="footer-links-row">
-                <a href="/privacy">Privacy Policy</a>
-                <a href="/terms">Terms of Use</a>
-                <a href="/disclosures">Disclosures</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Disclosures</a>
                 <a href="mailto:partners@musedata.ai">Contact</a>
               </div>
               <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
