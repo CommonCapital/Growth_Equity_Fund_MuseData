@@ -477,7 +477,7 @@ export default function MuseDataLanding() {
           <div className="sec-head-row">
             <div>
               <Fade delay={0}><div className="sec-label">What We Do</div></Fade>
-              <Fade delay={0.08}><h2 className="sec-h2">One firm. <em>Three pillars.</em></h2></Fade>
+              <Fade delay={0.08}><h2 className="sec-h2">One firm. <em>Four pillars.</em></h2></Fade>
             </div>
             <Fade delay={0.16}>
               <p className="sec-sub">Every part of MUSEDATA is built around the same principle: evidence before deployment, and partnership before capital.</p>
