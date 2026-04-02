@@ -171,4 +171,130 @@ subscriptionAgreementStorageId: v.optional(v.id("_storage")),
     .searchIndex("search_name_org", {
       searchField: "fullName", filterFields: ["email", "status", "investorType"],
     }),
+    // ─────────────────────────────────────────────────────────────────────────────
+// ADD THESE TWO TABLES TO YOUR EXISTING defineSchema() IN schema.ts
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+
+// ── Harvard AI Build Sprint — Participant Registrations ───────────────────────
+sprintParticipants: defineTable({
+//   // Section 1 – About You
+ fullName:         v.string(),
+  email:            v.string(),
+  institution:      v.string(),
+  programYear:      v.string(),
+ areaOfFocus:      v.string(),
+
+ // Section 2 – Skills & Capabilities
+backgrounds:      v.array(v.string()),   // checkboxes
+ skills:           v.string(),
+executionStyle:   v.string(),            // radio
+
+//   // Section 3 – Experience & Build History
+ hasPriorWork:     v.string(),            // Yes / No
+ projectSnapshot:  v.string(),
+  primaryRole:      v.string(),            // radio
+   outcomes:         v.array(v.string()),   // checkboxes (optional)
+  linkedinUrl:      v.optional(v.string()),
+  portfolioUrl:     v.optional(v.string()),
+  proofLinks:       v.optional(v.string()),
+
+//   // Section 4 – Availability & Participation
+  availWindow:      v.string(),
+  timeCommitment:   v.string(),
+  locationPref:     v.optional(v.string()),
+  commitSignal:     v.string(),
+
+//   // Section 5 – Teaming & Opportunities
+   teamPreference:   v.string(),
+   collabStyle:      v.string(),
+  interests:        v.array(v.string()),
+  postSprintIntent: v.string(),
+  openToSponsor:    v.optional(v.string()),
+
+//   // Section 6 – Your Interest
+  motivation:       v.string(),
+
+//   // Meta
+   status:           v.union(
+    v.literal("submitted"), v.literal("under_review"),
+    v.literal("accepted"),  v.literal("rejected"), v.literal("waitlisted")
+  ),
+ submittedAt:      v.number(),
+  lastUpdatedAt:    v.number(),
+  reviewedBy:       v.optional(v.string()),
+  reviewNotes:      v.optional(v.string()),
+ })
+   .index("by_email",        ["email"])
+   .index("by_status",       ["status"])
+  .index("by_submitted_at", ["submittedAt"])
+  .searchIndex("search_name_email", {
+   searchField: "fullName",
+     filterFields: ["email", "status"],
+  }),
+
+// ── Harvard AI Build Sprint — Sponsor Applications ────────────────────────────
+ sprintSponsors: defineTable({
+   // Section 1 – Organization Information
+  companyName:        v.string(),
+  contactName:        v.string(),
+  contactTitle:       v.string(),
+  email:              v.string(),
+  phone:              v.optional(v.string()),
+  website:            v.string(),
+  linkedin:           v.optional(v.string()),
+
+//   // Section 2 – Organization Type
+   orgType:            v.string(),    // radio
+   orgStage:           v.string(),    // radio
+
+  // Section 3 – Sponsorship Interest
+  involvementTypes:   v.array(v.string()),  // checkboxes
+  sponsorLevel:       v.string(),    // radio
+  anchorPartner:      v.string(),    // radio
+
+//   // Section 4 – Objectives
+   primaryGoals:       v.array(v.string()),  // checkboxes
+   successDefinition:  v.string(),    // paragraph
+
+//   // Section 5 – Event Fit
+  relevantAreas:      v.array(v.string()),  // checkboxes
+  participantEngagement: v.array(v.string()), // checkboxes
+
+//   // Section 6 – Timing & Format
+   preferredTimeframe: v.string(),    // radio
+  participationFormat: v.string(),   // radio
+  openToExpansion:    v.string(),    // radio
+
+//   // Section 7 – Internal Process
+  isDecisionMaker:    v.string(),    // radio
+  otherApprovers:     v.optional(v.string()),
+  decisionTimeline:   v.string(),    // radio
+
+//   // Section 8 – Additional Notes
+  additionalNotes:    v.optional(v.string()),
+
+  // Section 9 – Source
+  referralSource:     v.string(),    // radio
+
+//   // Meta
+  status:             v.union(
+     v.literal("submitted"), v.literal("under_review"),
+    v.literal("in_discussion"), v.literal("committed"), v.literal("declined")
+  ),
+  submittedAt:        v.number(),
+   lastUpdatedAt:      v.number(),
+   reviewedBy:         v.optional(v.string()),
+   reviewNotes:        v.optional(v.string()),
+   internalRating:     v.optional(v.number()),
+ })
+   .index("by_email",        ["email"])
+   .index("by_status",       ["status"])
+   .index("by_submitted_at", ["submittedAt"])
+   .index("by_org_type",     ["orgType"])
+   .searchIndex("search_company_contact", {
+     searchField: "companyName",
+     filterFields: ["email", "status", "orgType"],
+   }),
 });
