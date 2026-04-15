@@ -37,8 +37,8 @@ export const submitParticipant = mutation({
     postSprintIntent: v.string(),
     openToSponsor:    v.optional(v.string()),
 
-    // Section 6 – Your Interest
     motivation:       v.string(),
+    userId:           v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();

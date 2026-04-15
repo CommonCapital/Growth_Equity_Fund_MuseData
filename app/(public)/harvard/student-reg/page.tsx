@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useMutation } from "convex/react";
+import { useState, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import UnifiedNavbar from "@/components/UnifiedNavbar/UnifiedNavbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser, SignInButton } from "@clerk/nextjs";
 
 type FormData = {
   fullName: string; email: string; institution: string;
@@ -140,12 +142,31 @@ function CheckGroup({ name, value, onChange, options }: {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function StudentRegistrationPage() {
+  const router = useRouter();
+  const { user, isLoaded } = useUser();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+  const regStatus = useQuery(api.sprintJudging.getRegistrationStatus, 
+    userEmail ? { email: userEmail } : "skip"
+  );
+
+  useEffect(() => {
+    if (isLoaded && regStatus?.type === "participant") {
+      router.push("/harvard");
+    }
+  }, [isLoaded, regStatus, router]);
+
+  useEffect(() => {
+    if (userEmail && !form.email) {
+      setForm(f => ({ ...f, email: userEmail }));
+    }
+  }, [userEmail, form.email]);
 
   const submitParticipant = useMutation(api.sprintParticipants.submitParticipant);
 
@@ -191,6 +212,10 @@ export default function StudentRegistrationPage() {
 
   async function handleSubmit() {
     if (!validate()) return;
+    if (!user) {
+      setSubmitError("Please sign in before submitting your application.");
+      return;
+    }
     setSubmitting(true); setSubmitError("");
     try {
       await submitParticipant({
@@ -206,7 +231,14 @@ export default function StudentRegistrationPage() {
         collabStyle: form.collabStyle, interests: form.interests,
         postSprintIntent: form.postSprintIntent, openToSponsor: form.openToSponsor || undefined,
         motivation: form.motivation,
+        userId: user?.id || undefined,
       });
+      
+      // Set 7-day cookie
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 7);
+      document.cookie = `sprint_session=true; path=/; expires=${expires.toUTCString()}`;
+      
       setSubmitted(true);
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -303,7 +335,7 @@ export default function StudentRegistrationPage() {
             <div className="success-tag">Application received</div>
             <h2 className="success-h">Thanks for applying.</h2>
             <p className="success-p">We've received your application for the Harvard AI Build Sprint. If you're a strong fit, we'll be in touch with next steps shortly.</p>
-            <Link href="/" className="success-link">← Back to home</Link>
+            <Link href="/harvard" className="success-link">← Enter Hub Dashboard</Link>
           </div>
         </div>
       ) : (
@@ -505,14 +537,22 @@ export default function StudentRegistrationPage() {
                   : <span />}
                 {step < TOTAL_STEPS - 1
                   ? <button className="btn-next" onClick={next}>Continue <span className="arr" /></button>
-                  : <button className="btn-next" onClick={handleSubmit} disabled={submitting}>
+                  : user ? (
+                    <button className="btn-next" onClick={handleSubmit} disabled={submitting}>
                       {submitting ? "Submitting…" : <><span>Submit application</span><span className="arr" /></>}
-                    </button>}
+                    </button>
+                  ) : (
+                    <SignInButton mode="modal">
+                      <button className="btn-next">
+                        <span>Sign In to Submit</span><span className="arr" />
+                      </button>
+                    </SignInButton>
+                  )}
               </div>
 
               <p className="crosslink">
                 Are you an organization?{" "}
-                <Link href="/sponsor-form">Apply as a sponsor instead →</Link>
+                <Link href="/harvard/sponsor-form">Apply as a sponsor instead →</Link>
               </p>
 
             </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { SignInButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 /* ─── Fade/Reveal via IntersectionObserver ─── */
@@ -74,6 +75,15 @@ export default function MuseDataLanding() {
   const [mobOpen, setMobOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const session = document.cookie.split("; ").find(row => row.startsWith("sprint_session="));
+    if (session) {
+      setHasSession(true);
+    }
+  }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -440,9 +450,14 @@ export default function MuseDataLanding() {
               <Authenticated>
                 <Link href="/funding" className="btn-primary">Apply for Capital <span className="arr" /></Link>
               </Authenticated>
-         <Link href="/student-reg" className="btn-ghost">
+          <Link href="/harvard" className="btn-ghost">
     Harvard AI Build Sprint <span className="arr" />
   </Link>
+  {hasSession && (
+    <Link href="/harvard" className="btn-primary" style={{ background: "var(--deep)", border: "1px solid var(--bright)" }}>
+      Return to Dashboard <span className="arr" />
+    </Link>
+  )}
             </div>
           </div>
         </div>
@@ -687,8 +702,8 @@ export default function MuseDataLanding() {
                 <a href="#">Terms of Use</a>
                 <a href="#">Disclosures</a>
                 <a href="mailto:partners@musedata.ai">Contact</a>
-                 <a href="/student-reg">Build Sprint</a>
-  <a href="/sponsor-form">Sponsor</a>
+                 <a href="/harvard/student-reg">Build Sprint</a>
+  <a href="/harvard/sponsor-form">Sponsor</a>
               </div>
               <div className="footer-copy">© 2026 MUSEDATA Growth Equity. All rights reserved.</div>
             </div>

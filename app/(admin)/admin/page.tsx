@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser, SignIn } from "@clerk/nextjs";
-import { useQuery, useMutation, useConvex } from "convex/react";
+import { useQuery, useMutation, useConvex, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState, useEffect, useRef } from "react";
@@ -1966,7 +1966,8 @@ const TABS: { key: Tab; icon: any; label: string; short: string; dot: string }[]
 ];
 
 export default function AdminPage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded: isClerkLoaded } = useUser();
+  const { isAuthenticated, isLoading: isConvexLoading } = useConvexAuth();
   const [tab, setTab] = useState<Tab>("startups");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -1978,6 +1979,7 @@ export default function AdminPage() {
  
   const switchTab = (t: Tab) => { setTab(t); setStatusFilter(""); setSearch(""); };
 
+  const isLoaded = isClerkLoaded && !isConvexLoading;
   if (!isLoaded) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: T.ghost }}>
       <div className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: T.main, borderTopColor: "transparent" }} />
@@ -2000,7 +2002,7 @@ export default function AdminPage() {
   );
 
   const userEmail = user.primaryEmailAddress?.emailAddress?.toLowerCase() ?? "";
-  if (!ADMIN_EMAILS.includes(userEmail)) return (
+  if (!ADMIN_EMAILS.includes(userEmail) || !isAuthenticated) return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ background: T.ghost }}>
       <div className="text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto" style={{ background: "#fee2e2", border: "1px solid #fca5a5" }}>

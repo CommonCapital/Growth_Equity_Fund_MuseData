@@ -44,6 +44,7 @@ export const submitSponsor = mutation({
 
     // Section 9 – Source
     referralSource:        v.string(),
+    userId:                v.string(),
   },
   handler: async (ctx, args) => {
     const now = Date.now();

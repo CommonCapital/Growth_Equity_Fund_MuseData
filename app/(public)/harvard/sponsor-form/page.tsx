@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useMutation } from "convex/react";
+import { useState, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import UnifiedNavbar from "@/components/UnifiedNavbar/UnifiedNavbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser, SignInButton } from "@clerk/nextjs";
 
 type FormData = {
   companyName: string; contactName: string; contactTitle: string;
@@ -130,12 +132,31 @@ function CheckGroup({ name, value, onChange, options }: {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SponsorFormPage() {
+  const router = useRouter();
+  const { user, isLoaded } = useUser();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+  const regStatus = useQuery(api.sprintJudging.getRegistrationStatus, 
+    userEmail ? { email: userEmail } : "skip"
+  );
+
+  useEffect(() => {
+    if (isLoaded && regStatus?.type === "sponsor") {
+      router.push("/harvard");
+    }
+  }, [isLoaded, regStatus, router]);
+
+  useEffect(() => {
+    if (userEmail && !form.email) {
+      setForm(f => ({ ...f, email: userEmail }));
+    }
+  }, [userEmail, form.email]);
 
   const submitSponsor = useMutation(api.sprintSponsors.submitSponsor);
 
@@ -184,6 +205,10 @@ export default function SponsorFormPage() {
 
   async function handleSubmit() {
     if (!validate()) return;
+    if (!user) {
+      setSubmitError("Please sign in before submitting your inquiry.");
+      return;
+    }
     setSubmitting(true); setSubmitError("");
     try {
       await submitSponsor({
@@ -197,7 +222,14 @@ export default function SponsorFormPage() {
         openToExpansion: form.openToExpansion, isDecisionMaker: form.isDecisionMaker,
         otherApprovers: form.otherApprovers || undefined, decisionTimeline: form.decisionTimeline,
         additionalNotes: form.additionalNotes || undefined, referralSource: form.referralSource,
+        userId: user?.id || "manual",
       });
+
+      // Set 7-day cookie
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 7);
+      document.cookie = `sprint_session=true; path=/; expires=${expires.toUTCString()}`;
+
       setSubmitted(true);
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -288,7 +320,7 @@ export default function SponsorFormPage() {
             <div className="success-tag">Inquiry received</div>
             <h2 className="success-h">Thank you for your interest.</h2>
             <p className="success-p">We've received your sponsorship inquiry for the Harvard AI Build Sprint. Our team will review your submission and follow up shortly to discuss partnership opportunities.</p>
-            <Link href="/" className="success-link">← Back to home</Link>
+            <Link href="/harvard" className="success-link">← Enter Hub Dashboard</Link>
           </div>
         </div>
       ) : (
@@ -520,14 +552,22 @@ export default function SponsorFormPage() {
                   : <span />}
                 {step < TOTAL_STEPS - 1
                   ? <button className="btn-next" onClick={next}>Continue <span className="arr" /></button>
-                  : <button className="btn-next" onClick={handleSubmit} disabled={submitting}>
+                  : user ? (
+                    <button className="btn-next" onClick={handleSubmit} disabled={submitting}>
                       {submitting ? "Submitting…" : <><span>Submit inquiry</span><span className="arr" /></>}
-                    </button>}
+                    </button>
+                  ) : (
+                    <SignInButton mode="modal">
+                      <button className="btn-next">
+                        <span>Sign In to Submit</span><span className="arr" />
+                      </button>
+                    </SignInButton>
+                  )}
               </div>
 
               <p className="crosslink">
                 Looking to participate as a builder?{" "}
-                <Link href="/student-reg">Apply as a participant instead →</Link>
+                <Link href="/harvard/student-reg">Apply as a participant instead →</Link>
               </p>
 
             </div>

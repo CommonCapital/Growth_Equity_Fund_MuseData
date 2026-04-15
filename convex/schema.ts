@@ -172,22 +172,15 @@ subscriptionAgreementStorageId: v.optional(v.id("_storage")),
       searchField: "fullName", filterFields: ["email", "status", "investorType"],
     }),
     // ─────────────────────────────────────────────────────────────────────────────
-// ADD THESE TWO TABLES TO YOUR EXISTING defineSchema() IN schema.ts
-// ─────────────────────────────────────────────────────────────────────────────
-
-
-
 // ── Harvard AI Build Sprint — Participant Registrations ───────────────────────
 sprintParticipants: defineTable({
-//   // Section 1 – About You
- fullName:         v.string(),
+  userId:           v.optional(v.string()), // Clerk ID
+  fullName:         v.string(),
   email:            v.string(),
   institution:      v.string(),
   programYear:      v.string(),
- areaOfFocus:      v.string(),
-
- // Section 2 – Skills & Capabilities
-backgrounds:      v.array(v.string()),   // checkboxes
+  areaOfFocus:      v.string(),
+  backgrounds:      v.array(v.string()),   // checkboxes
  skills:           v.string(),
 executionStyle:   v.string(),            // radio
 
@@ -236,7 +229,7 @@ executionStyle:   v.string(),            // radio
 
 // ── Harvard AI Build Sprint — Sponsor Applications ────────────────────────────
  sprintSponsors: defineTable({
-   // Section 1 – Organization Information
+  userId:             v.optional(v.string()), // Clerk ID
   companyName:        v.string(),
   contactName:        v.string(),
   contactTitle:       v.string(),
@@ -297,4 +290,36 @@ executionStyle:   v.string(),            // radio
      searchField: "companyName",
      filterFields: ["email", "status", "orgType"],
    }),
+  // ── Harvard AI Build Sprint — Teaming & Judging ──────────────────────────────
+  sprintTeams: defineTable({
+    name: v.string(),
+    description: v.string(),
+    videoUrl: v.string(),
+    githubUrl: v.string(),
+    leaderId: v.id("sprintParticipants"),
+    inviteCode: v.string(),
+    submittedAt: v.number(),
+  })
+    .index("by_leader", ["leaderId"])
+    .index("by_invite_code", ["inviteCode"]),
+
+  sprintMemberships: defineTable({
+    teamId: v.id("sprintTeams"),
+    participantId: v.id("sprintParticipants"),
+    role: v.union(v.literal("leader"), v.literal("member")),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_participant", ["participantId"])
+    .index("by_team_and_participant", ["teamId", "participantId"]),
+
+  sprintJudgments: defineTable({
+    teamId: v.id("sprintTeams"),
+    sponsorId: v.id("sprintSponsors"),
+    rating: v.number(), // 1-10
+    note: v.string(),
+    submittedAt: v.number(),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_sponsor", ["sponsorId"])
+    .index("by_team_and_sponsor", ["teamId", "sponsorId"]),
 });

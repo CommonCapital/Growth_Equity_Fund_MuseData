@@ -14,8 +14,10 @@ import type * as http from "../http.js";
 import type * as jobApplications from "../jobApplications.js";
 import type * as limitedPartnerApplications from "../limitedPartnerApplications.js";
 import type * as scrapingJobs from "../scrapingJobs.js";
+import type * as sprintJudging from "../sprintJudging.js";
 import type * as sprintParticipants from "../sprintParticipants.js";
 import type * as sprintSponsors from "../sprintSponsors.js";
+import type * as sprintTeams from "../sprintTeams.js";
 import type * as startupApplications from "../startupApplications.js";
 import type * as subscriptions from "../subscriptions.js";
 
@@ -32,8 +34,10 @@ declare const fullApi: ApiFromModules<{
   jobApplications: typeof jobApplications;
   limitedPartnerApplications: typeof limitedPartnerApplications;
   scrapingJobs: typeof scrapingJobs;
+  sprintJudging: typeof sprintJudging;
   sprintParticipants: typeof sprintParticipants;
   sprintSponsors: typeof sprintSponsors;
+  sprintTeams: typeof sprintTeams;
   startupApplications: typeof startupApplications;
   subscriptions: typeof subscriptions;
 }>;
