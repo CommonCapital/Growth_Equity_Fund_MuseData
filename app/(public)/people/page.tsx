@@ -65,6 +65,8 @@ function PersonCard({ id, person, index, onOpen }: { id: string; person: Person;
     return () => io.disconnect();
   }, [index]);
 
+  if (!person) return null;
+
   return (
     <div ref={ref} className="lc" onClick={() => onOpen(id)}>
       <div className="lc-inner">
@@ -74,6 +76,11 @@ function PersonCard({ id, person, index, onOpen }: { id: string; person: Person;
         <div className="lc-body">
           <div className="lc-name">{person.name}</div>
           <div className="lc-title">{person.title}</div>
+          <div className="lc-logos">
+            {person.logoTags.map(tag => (
+              <span key={tag} className="logo-tag">{tag}</span>
+            ))}
+          </div>
         </div>
         <div className="lc-arrow">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -106,6 +113,11 @@ function Modal({ id, onClose }: { id: string | null; onClose: () => void }) {
             <div className="modal-init">{person.init}</div>
             <div className="modal-name">{person.name}</div>
             <div className="modal-title">{person.title}</div>
+            <div className="lc-logos" style={{ marginTop: '1.2rem', marginBottom: '0.5rem' }}>
+              {person.logoTags.map(tag => (
+                <span key={tag} className="logo-tag">{tag}</span>
+              ))}
+            </div>
             <div className="modal-bio">{person.bio}</div>
           </>
         )}
@@ -255,8 +267,6 @@ export default function PeoplePage() {
           .team-grid{grid-template-columns:1fr;}
         }
       `}</style>
-      <UnifiedNavbar />
-      {/* ── PAGE HEADER ── */}
       <div className="page-header">
         <div className="page-header-inner">
           <div className="ph-tag">People</div>
@@ -272,12 +282,11 @@ export default function PeoplePage() {
           <div className="team-grid">
             <PersonCard id="lead1" person={people.lead1} index={0} onOpen={openModal} />
             <PersonCard id="lead2" person={people.lead2} index={1} onOpen={openModal} />
-            <PersonCard id="lead7" person={people.lead7} index={2} onOpen={openModal} />
+            <PersonCard id="lead3" person={people.lead3} index={2} onOpen={openModal} />
             <PersonCard id="lead4" person={people.lead4} index={3} onOpen={openModal} />
-            <PersonCard id="lead6" person={people.lead6} index={4} onOpen={openModal} />
-            <PersonCard id="lead10" person={people.lead10} index={5} onOpen={openModal} />
-            <PersonCard id="lead8" person={people.lead8} index={6} onOpen={openModal} />
-            <PersonCard id="lead9" person={people.lead9} index={7} onOpen={openModal} />
+            <PersonCard id="lead5" person={people.lead5} index={4} onOpen={openModal} />
+            <PersonCard id="lead6" person={people.lead6} index={5} onOpen={openModal} />
+            <PersonCard id="lead7" person={people.lead7} index={6} onOpen={openModal} />
             <div style={{ background: "var(--white)" }}></div>
             <div style={{ background: "var(--white)" }}></div>
           </div>
