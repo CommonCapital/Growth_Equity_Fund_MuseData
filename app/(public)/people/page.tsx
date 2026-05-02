@@ -22,32 +22,28 @@ const people: Record<string, Person> = {
     logoTags: ['Georgia Tech'],
     bio: 'Nico brings a track record of large-scale operational transformation across McKinsey & Company and Alvarez & Marsal, where he advised Fortune 500 and private equity-backed companies on business technology, digital operations, and performance improvement. At MUSEDATA, he oversees day-to-day operations and leads portfolio infrastructure delivery — ensuring every company in the portfolio is built to scale and earn institutional trust.'
   },
-  lead4: {
+  lead3: {
     init: 'BK', name: 'Brien Kurtz', title: 'Advisor, AI & Data Strategy',
     logoTags: ['Notre Dame'],
     bio: 'Brien brings 15+ years of experience building enterprise-grade data systems at Bridgewater Associates, Pratt & Whitney, and Cooper. His work spans scalable data pipelines, people analytics, and AI-driven infrastructure — making him a critical voice on how MUSEDATA portfolio companies architect their data layer for long-term institutional value.'
   },
-  lead6: {
+  lead4: {
     init: 'SS', name: 'Stavan Shah', title: 'Strategic Growth Advisor',
     logoTags: ['Kellogg', 'Georgia Tech'],
     bio: "Stavan's background spans VC-level investing, early-stage technology, and strategic consulting at McKinsey & Company. He is currently completing his MBA at Northwestern's Kellogg School of Management. He advises MUSEDATA portfolio companies on growth strategy, go-to-market execution, and venture positioning — bridging the gap between operator instincts and investor expectations."
   },
-  lead10: {
+  lead5: {
     init: 'AL', name: 'Alex Lee', title: 'Legal Strategy Advisor',
     logoTags: ['WashU Law', 'Notre Dame'],
     bio: 'Alex provides legal strategy counsel to MUSEDATA and its portfolio companies, with a foundation from Washington University School of Law. He advises on deal structuring, regulatory considerations, and the legal frameworks that underpin institutional investment relationships.'
   },
-  lead7: {
-    init: 'NA', name: 'Noor Ul Ain', title: 'Investment Analyst',
-    logoTags: ['Oxford Brookes'],
-    bio: "Noor supports MUSEDATA's investment team across deal evaluation, market research, and portfolio analysis. An Oxford Brookes University alumna, she brings structured analytical thinking and a sharp eye for financial detail to every engagement — helping the team move quickly and rigorously on new opportunities."
-  },
-  lead8: {
+
+  lead6: {
     init: 'NO', name: 'Nursan Omarov', title: 'Lead Developer',
-    logoTags: ['HRAI'],
+    logoTags: ['Audiit'],
     bio: "Nursan leads technology development for MUSEDATA's internal platforms and portfolio company tools. He brings deep expertise in AI systems, enterprise software architecture, and machine learning infrastructure — advising portfolio companies on how to build technology that compounds in value and supports institutional due diligence."
   },
-  lead9: {
+  lead7: {
     init: 'AB', name: 'Arjun Bhattarai', title: 'Private Equity Intern',
     logoTags: ['Harvard'],
     bio: 'Arjun supports the MUSEDATA investment team across deal sourcing, financial modeling, and portfolio research. A Harvard University student, he brings strong analytical foundations and a commitment to the rigorous work that underlies every investment thesis MUSEDATA pursues.'
@@ -81,7 +77,7 @@ function PersonCard({ id, person, index, onOpen }: { id: string; person: Person;
         </div>
         <div className="lc-arrow">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9h12M10 4l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 9h12M10 4l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
       </div>
@@ -259,7 +255,7 @@ export default function PeoplePage() {
           .team-grid{grid-template-columns:1fr;}
         }
       `}</style>
-     <UnifiedNavbar />
+      <UnifiedNavbar />
       {/* ── PAGE HEADER ── */}
       <div className="page-header">
         <div className="page-header-inner">
